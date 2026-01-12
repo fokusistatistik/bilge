@@ -69,7 +69,8 @@ export const useStore = create<AppState>((set, get) => ({
             academicTitle: user.academicTitle || '',
             institution: user.institution || '',
             academicField: user.academicField || '',
-            isProfileComplete: user.isProfileComplete || false
+            isProfileComplete: user.isProfileComplete || false,
+            credits: user.credits || 100
         }
     }),
     updateUser: (updates) => set((state) => ({

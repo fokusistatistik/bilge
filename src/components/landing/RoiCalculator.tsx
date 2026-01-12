@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowRight, Calculator, DollarSign, Clock } from "lucide-react";
+import { Calculator, DollarSign } from "lucide-react";
 
 export function RoiCalculator() {
     const [monthlyCount, setMonthlyCount] = useState(5);
