@@ -1,0 +1,21 @@
+{
+    "name": "Bilge - Bilimsel İstatistik ve Literatür Geliştirme Enstrümanı",
+    "short_name": "Bilge",
+    "description": "Yapay zeka destekli akademik istatistik ve analiz platformu.",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#ffffff",
+    "icons": [
+        {
+            "src": "/icon-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/icon-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}
