@@ -26,6 +26,8 @@ import { cn } from '@/lib/utils';
 interface NewProjectModalProps {
     className?: string;
     trigger?: React.ReactNode;
+    isOpen?: boolean;
+    onClose?: () => void;
 }
 
 export function NewProjectModal({ className, trigger }: NewProjectModalProps) {

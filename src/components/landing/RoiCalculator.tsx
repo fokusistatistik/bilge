@@ -46,7 +46,7 @@ export function RoiCalculator() {
                         </div>
                         <Slider
                             value={[monthlyCount]}
-                            onValueChange={(v) => setMonthlyCount(v[0])}
+                            onValueChange={(v: number[]) => setMonthlyCount(v[0])}
                             max={50}
                             step={1}
                             className="py-2"
@@ -60,7 +60,7 @@ export function RoiCalculator() {
                         </div>
                         <Slider
                             value={[avgTime]}
-                            onValueChange={(v) => setAvgTime(v[0])}
+                            onValueChange={(v: number[]) => setAvgTime(v[0])}
                             max={20}
                             step={0.5}
                             className="py-2"
@@ -74,7 +74,7 @@ export function RoiCalculator() {
                         </div>
                         <Slider
                             value={[hourlyRate]}
-                            onValueChange={(v) => setHourlyRate(v[0])}
+                            onValueChange={(v: number[]) => setHourlyRate(v[0])}
                             max={500}
                             step={10}
                             className="py-2"
