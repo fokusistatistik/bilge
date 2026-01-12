@@ -5,22 +5,28 @@ import Link from "next/link";
 
 export function Footer() {
     return (
-        <footer className="bg-slate-900 text-slate-300 border-t border-slate-800">
+        <footer className="bg-slate-900 text-slate-300">
             <div className="container px-4 md:px-6 mx-auto py-16">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-12 text-sm">
 
                     {/* Brand Column */}
                     <div className="space-y-4">
-                        <div className="flex items-center gap-2 text-white font-bold text-xl">
-                            <div className="h-8 w-8 bg-[#860000] rounded-lg flex items-center justify-center font-serif">B</div>
-                            <span>Bilge</span>
+                        <div className="flex items-center gap-2 bg-white p-2 rounded-lg w-fit">
+                            <img
+                                src="https://static.fokusistatistik.com/bilge/logos/bilgelogo.jpg"
+                                alt="Bilge Logo"
+                                className="h-8 w-auto"
+                            />
                         </div>
+                        <h5 className="text-white font-semibold text-xs opacity-70">
+                            Bilimsel İstatistik ve Literatür Geliştirme Enstrümanı
+                        </h5>
                         <p className="text-slate-400 leading-relaxed">
                             Doğru veri, doğru analiz, bilimsel kanıt.
                             Akademik çalışmalarınız için yapay zeka destekli profesyonel çözüm ortağınız.
                         </p>
                         <div className="pt-2 text-xs text-slate-500">
-                            <strong>Bilge</strong>, bir <span className="text-white">Fokus İstatistik</span> markasıdır.
+                            <strong>Bilge</strong>, bir <a href="https://fokusistatistik.com" target="_blank" className="text-white hover:underline">Fokus İstatistik</a> markasıdır.
                         </div>
                     </div>
 
@@ -52,15 +58,15 @@ export function Footer() {
                         <ul className="space-y-3">
                             <li className="flex items-start gap-3">
                                 <MapPin className="h-5 w-5 text-[#860000] shrink-0" />
-                                <span>Körfez Mahallesi 19 Mayıs Kümesi Küme Evleri No:188-14 Atakum / SAMSUN</span>
+                                <span>İzmit, Kocaeli</span>
                             </li>
                             <li className="flex items-center gap-3">
                                 <Phone className="h-5 w-5 text-[#860000] shrink-0" />
-                                <span>0 850 885 12 56</span>
+                                <span>0535 404 07 12</span>
                             </li>
                             <li className="flex items-center gap-3">
                                 <Mail className="h-5 w-5 text-[#860000] shrink-0" />
-                                <span>info@fokusistatistik.com</span>
+                                <span>bilgi@fokusistatistik.com</span>
                             </li>
                         </ul>
                         <div className="flex gap-4 pt-2">

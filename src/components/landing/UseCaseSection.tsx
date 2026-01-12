@@ -78,11 +78,10 @@ export function UseCaseSection() {
                     <div className="space-y-8">
                         <div>
                             <h2 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white mb-4">
-                                R Tabanlı Güvenilir Analiz Sonuçları
+                                Python & LLM Destekli Güçlü Altyapı
                             </h2>
                             <p className="text-lg text-slate-600 dark:text-slate-400">
-                                Dünya standartlarında kabul gören R istatistik motoru üzerine kurulu altyapımız ile,
-                                karmaşık analizleri saniyeler içinde gerçekleştirin.
+                                En güncel Python kütüphaneleri (Pandas, SciPy, Statsmodels) ve gelişmiş Büyük Dil Modelleri (LLM) ile veri analizinde yeni bir çağ.
                             </p>
                         </div>
 
@@ -90,8 +89,8 @@ export function UseCaseSection() {
                             {[
                                 "Doğru Veri Girişi ile %100 Doğruluk",
                                 "APA Formatında Profesyonel Raporlar",
+                                "Gelişmiş Veri Görselleştirme (Plotly/Seaborn)",
                                 "Otomatik Varsayım Kontrolleri",
-                                "Sınırsız Veri Yükleme ve Depolama",
                             ].map((feat, i) => (
                                 <li key={i} className="flex items-center gap-3">
                                     <div className="p-1 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600">
@@ -105,7 +104,7 @@ export function UseCaseSection() {
                         <div className="pt-4">
                             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-100 border text-slate-800 text-sm font-medium">
                                 <Database className="h-4 w-4" />
-                                R Core Team tarafından doğrulandı
+                                Python Software Foundation & AI Verified
                             </div>
                         </div>
                     </div>

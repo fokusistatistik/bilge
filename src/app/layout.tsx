@@ -18,8 +18,12 @@ export const metadata: Metadata = {
   description: "Araştırmacılar için Yapay Zeka destekli mentör",
   icons: {
     icon: 'https://static.fokusistatistik.com/bilge/logos/bilgefavicon.png',
+    apple: 'https://static.fokusistatistik.com/bilge/logos/bilgefavicon.png',
   },
   manifest: '/manifest.json',
+  other: {
+    "mobile-web-app-capable": "yes",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',

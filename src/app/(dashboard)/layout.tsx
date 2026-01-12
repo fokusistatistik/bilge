@@ -11,6 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Menu } from 'lucide-react';
 import AuthGuard from '@/components/auth/AuthGuard';
+import { VirtualAssistantChatbot } from '@/components/dashboard/VirtualAssistantChatbot';
 
 export default function DashboardLayout({
     children,
@@ -83,6 +84,9 @@ export default function DashboardLayout({
                 </div>
 
                 <SidebarRight />
+
+                {/* Virtual Assistant Chatbot */}
+                <VirtualAssistantChatbot />
             </div>
         </AuthGuard>
     );

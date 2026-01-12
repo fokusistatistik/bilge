@@ -26,13 +26,17 @@ export default function LandingPage() {
     <div className="flex flex-col min-h-screen">
       {/* Header / Navbar */}
       <header className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b border-transparent",
+        "fixed top-0 left-0 right-0 z-[100] transition-all duration-300 border-b border-transparent",
         scrolled ? "bg-white/80 dark:bg-slate-950/80 backdrop-blur-md shadow-sm border-slate-200 dark:border-slate-800" : "bg-transparent"
       )}>
         <div className="container px-4 md:px-6 mx-auto h-16 flex items-center justify-between">
           <div className="flex items-center gap-2 font-serif font-bold text-2xl text-slate-900 dark:text-white">
-            <div className="h-8 w-8 bg-[#860000] rounded-lg flex items-center justify-center text-white text-lg">B</div>
-            <span>Bilge</span>
+            {/* Logo */}
+            <img
+              src="https://static.fokusistatistik.com/bilge/logos/bilgelogo.jpg"
+              alt="Bilge Logo"
+              className="h-10 w-auto rounded-lg"
+            />
           </div>
 
           <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600 dark:text-slate-300">
