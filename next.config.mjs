@@ -1,14 +1,20 @@
+import withPWAInit from '@ducanh2912/next-pwa';
+
+const withPWA = withPWAInit({
+    dest: 'public',
+    disable: false,
+    register: true,
+    skipWaiting: true,
+});
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    // Build hatalarını yoksay (Deploy garantisi için)
     eslint: {
         ignoreDuringBuilds: true
     },
     typescript: {
         ignoreBuildErrors: true
     },
-
-    // Resim optimizasyonu
     images: {
         remotePatterns: [
             {
@@ -21,14 +27,10 @@ const nextConfig = {
             },
         ],
     },
-
-    // Performans optimizasyonu
     compress: true,
     poweredByHeader: false,
-
-    // Production optimizasyonları
     reactStrictMode: true,
     swcMinify: true,
 };
 
-export default nextConfig;
+export default withPWA(nextConfig);
