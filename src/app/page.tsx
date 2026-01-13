@@ -1,6 +1,7 @@
 'use client';
 
 import { HeroSection } from "@/components/landing/HeroSection";
+import { EnhancedFeaturesSection } from "@/components/landing/EnhancedFeaturesSection";
 import { UseCaseSection } from "@/components/landing/UseCaseSection";
 import { ComparisonSection } from "@/components/landing/ComparisonSection";
 import { PricingSection } from "@/components/landing/PricingSection";
@@ -59,6 +60,7 @@ export default function LandingPage() {
 
       <main className="flex-1">
         <HeroSection />
+        <EnhancedFeaturesSection />
         <UseCaseSection />
         <ComparisonSection />
         <PricingSection />

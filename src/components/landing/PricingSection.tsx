@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from "@/components/ui/button";
+import { InteractivePricingCalculator } from "./InteractivePricingCalculator";
 import { Check } from "lucide-react";
 
 export function PricingSection() {
@@ -14,6 +15,11 @@ export function PricingSection() {
                     <p className="text-lg text-slate-600 dark:text-slate-400">
                         Sadece ihtiyacınız olan analizler için ödeme yapın. Lisans ücreti yok, gizli maliyet yok.
                     </p>
+                </div>
+
+                {/* Interactive Calculator */}
+                <div className="mb-16">
+                    <InteractivePricingCalculator />
                 </div>
 
                 <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
