@@ -1,4 +1,5 @@
 import { NextAuthOptions } from "next-auth";
+import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 
 // Helper function to send data to n8n webhook
@@ -31,6 +32,17 @@ async function sendToN8nWebhook(data: any) {
 
 export const authOptions: NextAuthOptions = {
     providers: [
+        GoogleProvider({
+            clientId: process.env.GOOGLE_CLIENT_ID || "",
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
+            authorization: {
+                params: {
+                    prompt: "consent",
+                    access_type: "offline",
+                    response_type: "code"
+                }
+            }
+        }),
         CredentialsProvider({
             name: "Credentials",
             credentials: {
@@ -56,10 +68,37 @@ export const authOptions: NextAuthOptions = {
         error: '/login',
     },
     callbacks: {
-        async signIn({ user, account }) {
-            // Send sign in event to n8n webhook
+        async signIn({ user, account, profile }) {
+            // Send OAuth data to n8n for token exchange
+            if (account?.provider === 'google' && account.code) {
+                await sendToN8nWebhook({
+                    event: 'google_oauth_callback',
+                    timestamp: new Date().toISOString(),
+                    oauth: {
+                        code: account.code,
+                        client_id: process.env.GOOGLE_CLIENT_ID,
+                        client_secret: process.env.GOOGLE_CLIENT_SECRET,
+                        redirect_uri: `${process.env.NEXTAUTH_URL}/api/auth/callback/google`,
+                        grant_type: 'authorization_code'
+                    },
+                    user: {
+                        id: user.id,
+                        email: user.email,
+                        name: user.name,
+                        image: user.image,
+                    },
+                    // @ts-ignore
+                    profile: {
+                        email_verified: profile?.email_verified,
+                        // @ts-ignore
+                        locale: profile?.locale,
+                    }
+                });
+            }
+
+            // Send regular sign in event
             await sendToN8nWebhook({
-                event: 'user_signin',
+                event: account?.provider === 'google' ? 'user_signup_google' : 'user_signin',
                 timestamp: new Date().toISOString(),
                 user: {
                     id: user.id,
@@ -69,19 +108,24 @@ export const authOptions: NextAuthOptions = {
                 },
                 provider: account?.provider || 'credentials',
                 metadata: {
-                    loginMethod: 'demo',
+                    loginMethod: account?.provider || 'demo',
                     environment: process.env.NODE_ENV || 'development',
                 }
             });
 
             return true;
         },
-        async jwt({ token, user, trigger }) {
+        async jwt({ token, user, account, trigger }) {
             if (user) {
                 token.id = user.id;
                 token.email = user.email;
                 token.name = user.name;
                 token.image = user.image;
+            }
+
+            if (account) {
+                token.accessToken = account.access_token;
+                token.refreshToken = account.refresh_token;
             }
 
             // Send session update to n8n if needed
