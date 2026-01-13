@@ -1,5 +1,4 @@
 import { NextAuthOptions } from "next-auth";
-import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 
 // Helper function to send data to n8n webhook
@@ -23,19 +22,15 @@ async function sendToN8nWebhook(data: any) {
         if (!response.ok) {
             console.error('n8n webhook error:', response.statusText);
         } else {
-            console.log('Successfully sent to n8n webhook:', data.event);
+            console.log('✅ Successfully sent to n8n webhook:', data.event);
         }
     } catch (error) {
-        console.error('Failed to send to n8n webhook:', error);
+        console.error('❌ Failed to send to n8n webhook:', error);
     }
 }
 
 export const authOptions: NextAuthOptions = {
     providers: [
-        GoogleProvider({
-            clientId: process.env.GOOGLE_CLIENT_ID || "",
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
-        }),
         CredentialsProvider({
             name: "Credentials",
             credentials: {
@@ -43,10 +38,10 @@ export const authOptions: NextAuthOptions = {
                 password: { label: "Password", type: "password" }
             },
             async authorize(credentials) {
-                // Mock authentication - replace with real database check
+                // Demo authentication
                 if (credentials?.email === "demo@bilge.com" && credentials?.password === "demo123") {
                     return {
-                        id: "1",
+                        id: "demo-user-001",
                         name: "Demo User",
                         email: "demo@bilge.com",
                         image: null,
@@ -61,14 +56,10 @@ export const authOptions: NextAuthOptions = {
         error: '/login',
     },
     callbacks: {
-        async signIn({ user, account, profile }) {
-            // Determine if this is a new user (signup) or existing user (signin)
-            // In production, check against your database
-            const isNewUser = account?.provider === 'google' && !user.id;
-
-            // Send sign in/sign up data to n8n webhook
+        async signIn({ user, account }) {
+            // Send sign in event to n8n webhook
             await sendToN8nWebhook({
-                event: isNewUser ? 'user_signup' : 'user_signin',
+                event: 'user_signin',
                 timestamp: new Date().toISOString(),
                 user: {
                     id: user.id,
@@ -78,24 +69,19 @@ export const authOptions: NextAuthOptions = {
                 },
                 provider: account?.provider || 'credentials',
                 metadata: {
-                    // @ts-ignore
-                    emailVerified: profile?.email_verified,
-                    // @ts-ignore
-                    locale: profile?.locale,
+                    loginMethod: 'demo',
+                    environment: process.env.NODE_ENV || 'development',
                 }
             });
 
             return true;
         },
-        async jwt({ token, user, account, trigger }) {
+        async jwt({ token, user, trigger }) {
             if (user) {
                 token.id = user.id;
                 token.email = user.email;
                 token.name = user.name;
                 token.image = user.image;
-            }
-            if (account) {
-                token.provider = account.provider;
             }
 
             // Send session update to n8n if needed
