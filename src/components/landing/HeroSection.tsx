@@ -38,22 +38,29 @@ export function HeroSection() {
                     }}
                 />
                 {/* Floating particles */}
-                {[...Array(6)].map((_, i) => (
+                {[
+                    { left: '15%', top: '20%', delay: 0 },
+                    { left: '85%', top: '30%', delay: 0.5 },
+                    { left: '25%', top: '70%', delay: 1 },
+                    { left: '75%', top: '60%', delay: 1.5 },
+                    { left: '50%', top: '40%', delay: 2 },
+                    { left: '40%', top: '80%', delay: 2.5 },
+                ].map((particle, i) => (
                     <motion.div
                         key={i}
                         className="absolute w-2 h-2 bg-indigo-400/20 dark:bg-indigo-600/20 rounded-full"
                         style={{
-                            left: `${Math.random() * 100}%`,
-                            top: `${Math.random() * 100}%`,
+                            left: particle.left,
+                            top: particle.top,
                         }}
                         animate={{
                             y: [0, -30, 0],
                             opacity: [0, 1, 0],
                         }}
                         transition={{
-                            duration: 3 + Math.random() * 2,
+                            duration: 4,
                             repeat: Infinity,
-                            delay: Math.random() * 2,
+                            delay: particle.delay,
                         }}
                     />
                 ))}
