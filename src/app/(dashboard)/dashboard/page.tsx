@@ -433,58 +433,183 @@ export default function DashboardPage() {
 
             {/* Project Settings Dialog */}
             <Dialog open={showSettings} onOpenChange={setShowSettings}>
-                <DialogContent>
+                <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
                     <DialogHeader>
-                        <DialogTitle>Proje Ayarları</DialogTitle>
-                        <DialogDescription>Bu proje için özel yapılandırmalar.</DialogDescription>
+                        <DialogTitle>{language === 'tr' ? 'Proje Ayarları' : 'Project Settings'}</DialogTitle>
+                        <DialogDescription>{language === 'tr' ? 'Proje detaylarını ve yapılandırmasını düzenleyin.' : 'Manage project details and configuration.'}</DialogDescription>
                     </DialogHeader>
-                    <div className="grid gap-6 py-4">
-                        <div className="grid grid-cols-2 gap-4">
+
+                    <Tabs defaultValue="general" className="w-full">
+                        <TabsList className="grid w-full grid-cols-3 mb-4">
+                            <TabsTrigger value="general">{language === 'tr' ? 'Genel' : 'General'}</TabsTrigger>
+                            <TabsTrigger value="analysis">{language === 'tr' ? 'Analiz & Format' : 'Analysis & Format'}</TabsTrigger>
+                            <TabsTrigger value="members">{language === 'tr' ? 'Üyeler' : 'Members'}</TabsTrigger>
+                        </TabsList>
+
+                        {/* General Settings Tab */}
+                        <TabsContent value="general" className="space-y-4">
                             <div className="space-y-2">
-                                <Label>Ondalık Ayırıcı</Label>
+                                <Label>Proje Başlığı</Label>
+                                <Input
+                                    value={currentProject.title}
+                                    onChange={(e) => updateProjectSettings('title', e.target.value)}
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label>Proje Amacı / Açıklama</Label>
+                                <Textarea
+                                    value={currentProject.description || ''}
+                                    onChange={(e) => updateProjectSettings('description', e.target.value)}
+                                    rows={3}
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label>Proje Tipi</Label>
+                                    <Select
+                                        value={currentProject.type}
+                                        onValueChange={(v) => updateProjectSettings('type', v)}
+                                    >
+                                        <SelectTrigger><SelectValue /></SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="quantitative">Nicel (Quantitative)</SelectItem>
+                                            <SelectItem value="qualitative">Nitel (Qualitative)</SelectItem>
+                                            <SelectItem value="mixed">Karma (Mixed)</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label>Hedef Dil</Label>
+                                    <Select
+                                        value={currentProject.targetLanguage || 'tr'}
+                                        onValueChange={(v) => updateProjectSettings('targetLanguage', v)}
+                                    >
+                                        <SelectTrigger><SelectValue /></SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="tr">Türkçe</SelectItem>
+                                            <SelectItem value="en">English</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
+                        </TabsContent>
+
+                        {/* Analysis & Format Tab */}
+                        <TabsContent value="analysis" className="space-y-4">
+                            <div className="space-y-2">
+                                <Label>Hedeflenen Test</Label>
                                 <Select
-                                    value={currentProject.decimalSeparator || '.'}
-                                    onValueChange={(v) => updateProjectSettings('decimalSeparator', v)}
+                                    value={currentProject.targetTest || ''}
+                                    onValueChange={(val) => updateProjectSettings('targetTest', val)}
                                 >
-                                    <SelectTrigger><SelectValue /></SelectTrigger>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Seçiniz..." />
+                                    </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value=".">Nokta (.)</SelectItem>
-                                        <SelectItem value=",">Virgül (,)</SelectItem>
+                                        <SelectItem value="ttest">Bağımsız Örneklem T-Testi</SelectItem>
+                                        <SelectItem value="anova">Tek Yönlü ANOVA</SelectItem>
+                                        <SelectItem value="correlation">Korelasyon Analizi</SelectItem>
+                                        <SelectItem value="regression">Regresyon Analizi</SelectItem>
+                                        <SelectItem value="nonparametric">Non-Parametrik Testler</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
-                            <div className="space-y-2">
-                                <Label>Basamak Hassasiyeti</Label>
-                                <Input
-                                    type="number"
-                                    min="0" max="5"
-                                    value={currentProject.decimalPrecision || 3}
-                                    onChange={(e) => updateProjectSettings('decimalPrecision', parseInt(e.target.value))}
-                                />
-                                <p className="text-[10px] text-slate-500">Örnek: 1234.568</p>
-                            </div>
-                        </div>
 
-                        <div className="space-y-2 pt-4 border-t">
-                            <Label className="flex items-center gap-2"><Users className="h-4 w-4" /> Proje Üyeleri</Label>
-                            {(!currentProject.members || currentProject.members.length === 0) ? (
-                                <p className="text-sm text-slate-500 italic">Henüz üye eklenmedi.</p>
-                            ) : (
+                            <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    {currentProject.members.map(m => (
-                                        <div key={m.id} className="flex justify-between items-center text-sm p-2 bg-slate-50 rounded">
-                                            <span>{m.email}</span>
-                                            <Badge variant="secondary">{m.role}</Badge>
-                                        </div>
-                                    ))}
+                                    <Label>Ondalık Ayırıcı</Label>
+                                    <Select
+                                        value={currentProject.decimalSeparator || '.'}
+                                        onValueChange={(v) => updateProjectSettings('decimalSeparator', v)}
+                                    >
+                                        <SelectTrigger><SelectValue /></SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value=".">Nokta (.)</SelectItem>
+                                            <SelectItem value=",">Virgül (,)</SelectItem>
+                                        </SelectContent>
+                                    </Select>
                                 </div>
-                            )}
-                            <div className="flex gap-2 mt-2">
-                                <Input placeholder="ornek@gmail.com" className="h-8 text-xs" />
-                                <Button size="sm" variant="outline" className="h-8">Davet Et</Button>
+                                <div className="space-y-2">
+                                    <Label>Basamak Hassasiyeti</Label>
+                                    <Input
+                                        type="number"
+                                        min="0" max="5"
+                                        value={currentProject.decimalPrecision || 3}
+                                        onChange={(e) => updateProjectSettings('decimalPrecision', parseInt(e.target.value))}
+                                    />
+                                    <p className="text-[10px] text-slate-500">Örnek: {currentProject.decimalSeparator === ',' ? '1234,568' : '1234.568'}</p>
+                                </div>
                             </div>
-                        </div>
-                    </div>
+
+                            <div className="pt-4 border-t">
+                                <div className="flex items-center justify-between p-3 border rounded-lg bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800">
+                                    <div className="space-y-0.5">
+                                        <Label className="text-base">Güç Analizi İsteği</Label>
+                                        <p className="text-xs text-slate-500">Örneklem büyüklüğü ve güç analizi yapılsın mı?</p>
+                                    </div>
+                                    <Button
+                                        variant={currentProject.description?.includes('[Güç Analizi İsteniyor]') ? "default" : "outline"}
+                                        size="sm"
+                                        onClick={() => {
+                                            const hasPower = currentProject.description?.includes('[Güç Analizi İsteniyor]');
+                                            let newDesc = currentProject.description || "";
+                                            if (hasPower) {
+                                                newDesc = newDesc.replace('[Güç Analizi İsteniyor]', '').trim();
+                                            } else {
+                                                newDesc = `${newDesc} [Güç Analizi İsteniyor]`.trim();
+                                            }
+                                            updateProjectSettings('description', newDesc);
+                                        }}
+                                    >
+                                        {currentProject.description?.includes('[Güç Analizi İsteniyor]') ? "Aktif" : "Pasif"}
+                                    </Button>
+                                </div>
+                            </div>
+                        </TabsContent>
+
+                        {/* Members Tab */}
+                        <TabsContent value="members" className="space-y-4">
+                            <div className="space-y-2">
+                                <Label className="flex items-center gap-2"><Users className="h-4 w-4" /> Proje Üyeleri</Label>
+                                {(!currentProject.members || currentProject.members.length === 0) ? (
+                                    <div className="text-center py-8 bg-slate-50 rounded-lg border border-dashed text-slate-400">
+                                        <Users className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                                        <p className="text-sm">Henüz üye eklenmedi.</p>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-2">
+                                        {currentProject.members.map(m => (
+                                            <div key={m.id} className="flex justify-between items-center text-sm p-3 bg-white border rounded-lg shadow-sm">
+                                                <div className="flex items-center gap-3">
+                                                    <Avatar className="h-8 w-8">
+                                                        <AvatarFallback>{m.email[0].toUpperCase()}</AvatarFallback>
+                                                    </Avatar>
+                                                    <div>
+                                                        <p className="font-medium">{m.email}</p>
+                                                        <p className="text-xs text-slate-500">Eklenme: Bugün</p>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <Badge variant={m.role === 'admin' ? 'default' : 'secondary'}>{m.role}</Badge>
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50">
+                                                        <Trash2 className="h-4 w-4" />
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+
+                                <div className="flex gap-2 mt-4 pt-4 border-t">
+                                    <Input placeholder="ornek@gmail.com" className="text-sm" />
+                                    <Button className="bg-[#860000] text-white hover:bg-[#660000]">Davet Et</Button>
+                                </div>
+                            </div>
+                        </TabsContent>
+                    </Tabs>
                 </DialogContent>
             </Dialog>
 
