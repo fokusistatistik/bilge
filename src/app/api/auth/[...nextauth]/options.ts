@@ -4,8 +4,8 @@ import GoogleProvider from "next-auth/providers/google";
 // Retry Logic ile Güçlendirilmiş Webhook Göndericisi
 async function sendToN8nWebhook(webhookType: 'signin' | 'signup' | 'signout', data: any, retries = 2) {
     const webhookUrls = {
-        signin: process.env.N8N_SIGNIN_WEBHOOK,
-        signup: process.env.N8N_SIGNUP_WEBHOOK,
+        signin: process.env.N8N_SIGNIN_WEBHOOK || process.env.N8N_AUTH_WEBHOOK,
+        signup: process.env.N8N_SIGNUP_WEBHOOK || process.env.N8N_AUTH_WEBHOOK, // Fallback for signup too
         signout: process.env.N8N_SIGNOUT_WEBHOOK,
     };
 
