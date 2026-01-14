@@ -5,7 +5,7 @@ import { MessageCircle, X, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface ChatMessage {
@@ -113,6 +113,7 @@ export function VirtualAssistantChatbot() {
                         <div className="bg-gradient-to-r from-[#860000] to-[#660000] p-4 text-white flex items-center justify-between">
                             <div className="flex items-center gap-3">
                                 <Avatar className="h-10 w-10 border-2 border-white">
+                                    <AvatarImage src="https://static.fokusistatistik.com/resimler/favicon.png" />
                                     <AvatarFallback className="bg-white text-[#860000] font-bold">B</AvatarFallback>
                                 </Avatar>
                                 <div>
@@ -140,6 +141,7 @@ export function VirtualAssistantChatbot() {
                                     >
                                         {msg.role === 'assistant' && (
                                             <Avatar className="h-8 w-8 shrink-0">
+                                                <AvatarImage src="https://static.fokusistatistik.com/resimler/favicon.png" />
                                                 <AvatarFallback className="bg-indigo-100 text-indigo-600 text-xs">B</AvatarFallback>
                                             </Avatar>
                                         )}
@@ -159,6 +161,7 @@ export function VirtualAssistantChatbot() {
                                 {isTyping && (
                                     <div className="flex gap-3">
                                         <Avatar className="h-8 w-8 shrink-0">
+                                            <AvatarImage src="https://static.fokusistatistik.com/resimler/favicon.png" />
                                             <AvatarFallback className="bg-indigo-100 text-indigo-600 text-xs">B</AvatarFallback>
                                         </Avatar>
                                         <div className="bg-slate-100 dark:bg-slate-800 rounded-2xl rounded-bl-none px-4 py-3 flex gap-1">
