@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useStore, Project } from "@/store/useStore";
-import { Layout, MessageSquare, ChevronLeft, ChevronRight, Settings, User, LogOut, Plus, MoreHorizontal, Archive, Trash2, Power, PlayCircle, PauseCircle } from "lucide-react";
+import { Layout, MessageSquare, ChevronLeft, ChevronRight, Settings, User, LogOut, Plus, MoreHorizontal, Archive, Trash2, Power, PlayCircle, PauseCircle, Star } from "lucide-react";
 import { NewProjectModal } from "./NewProjectModal";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useSession, signOut } from "next-auth/react";
@@ -20,7 +20,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export function SidebarLeft() {
-    const { projects, currentProject, setCurrentProject, updateProject, deleteProject, user, language, toggleLeftSidebar, isLeftSidebarOpen } = useStore();
+    const { projects, currentProject, setCurrentProject, updateProject, deleteProject, toggleProjectFavorite, user, language, toggleLeftSidebar, isLeftSidebarOpen } = useStore();
     const { data: session } = useSession();
     const router = useRouter();
     const [showArchived, setShowArchived] = useState(false);
@@ -44,8 +44,11 @@ export function SidebarLeft() {
         }
     };
 
-    // Filter projects
-    const displayedProjects = projects.filter(p => !p.status || (showArchived ? true : p.status !== 'archived'));
+    // Filter projects based on archived status
+    // Also Sort: Favorites first
+    const displayedProjects = projects
+        .filter(p => !p.status || (showArchived ? true : p.status !== 'archived'))
+        .sort((a, b) => (Number(!!b.isFavorite) - Number(!!a.isFavorite)));
 
     // Collapsed View
     if (!isLeftSidebarOpen) {
@@ -118,6 +121,13 @@ export function SidebarLeft() {
                                             className={`w-full justify-start text-sm font-normal truncate pr-8 ${project.status === 'passive' ? 'opacity-60 grayscale' : ''} ${project.status === 'archived' ? 'opacity-40 italic' : ''}`}
                                             onClick={() => setCurrentProject(project)}
                                         >
+                                            <div
+                                                role="button"
+                                                onClick={(e) => { e.stopPropagation(); toggleProjectFavorite(project.id); }}
+                                                className="mr-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-full p-0.5 transition-colors z-10"
+                                            >
+                                                <Star className={`h-3.5 w-3.5 ${project.isFavorite ? 'fill-yellow-400 text-yellow-400' : 'text-slate-300'}`} />
+                                            </div>
                                             <MessageSquare className="mr-2 h-4 w-4 text-slate-400 group-hover:text-[#860000]" />
                                             <span className="truncate flex-1 text-left">
                                                 {project.title}

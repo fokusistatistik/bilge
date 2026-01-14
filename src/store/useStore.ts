@@ -29,27 +29,34 @@ export interface Project {
     id: string;
     title: string;
     description?: string;
+    abstract?: string; // New
+    importance?: 'low' | 'medium' | 'high'; // New
+    color?: string; // Enhanced color palette support
+    isFavorite?: boolean; // Favorite functionality
 
     // Academic Info
     studyType?: 'thesis' | 'article' | 'clinical_trial' | 'other';
     academicBranch?: string;
+    methodLevel?: 'basic' | 'intermediate' | 'advanced'; // Renamed from scale, used for "Statistical Methods"
 
     // Configuration
-    scale?: 'basic' | 'intermediate' | 'advanced';
     targetLanguage?: 'tr' | 'en';
     status?: 'active' | 'passive' | 'archived';
 
     // Advanced Settings
     decimalSeparator?: '.' | ',';
-    decimalPrecision?: number;
+    decimalPlaces?: number; // 0-4
+    alphaLevel?: number; // 0.01, 0.05, 0.10
     targetTest?: string;
     reportFormat?: 'APA7' | 'Chicago' | 'Harvard' | 'MLA' | 'IEEE';
     members?: ProjectMember[];
     variables?: ProjectVariable[];
+    files?: { name: string; url: string; type: string; date: Date }[];
+    outputs?: { name: string; url: string; type: 'chart' | 'report' | 'image' | 'other'; date: Date }[];
+    messages?: Message[];
 
     // Metrics
     usedCredits: number;
-    // ...
 }
 
 export interface UserProfile {
@@ -62,7 +69,7 @@ export interface UserProfile {
     // Personal Info
     phone?: string;
     country?: string;
-    birthDate?: string; // ISO String for easier storage
+    birthDate?: string;
     bio?: string;
 
     // Academic Info
@@ -134,6 +141,7 @@ interface AppState {
     addProject: (project: Project) => void;
     updateProject: (id: string, updates: Partial<Project>) => void;
     deleteProject: (id: string) => void;
+    toggleProjectFavorite: (id: string) => void;
     addFileToProject: (projectId: string, file: { name: string; url: string; type: string; date: Date }) => void;
     addOutputToProject: (projectId: string, output: { name: string; url: string; type: 'chart' | 'report' | 'image' | 'other'; date: Date }) => void;
 
@@ -145,13 +153,10 @@ interface AppState {
     // UI State
     isSidebarOpen: boolean;
     toggleSidebar: () => void;
-
     isLeftSidebarOpen: boolean;
     toggleLeftSidebar: () => void;
-
     isRightSidebarOpen: boolean;
     toggleRightSidebar: () => void;
-
     aiMode: 'chat' | 'analysis' | 'consultancy';
     setAiMode: (mode: 'chat' | 'analysis' | 'consultancy') => void;
 }
@@ -176,7 +181,7 @@ export const useStore = create<AppState>()(
                     theme: 'light',
                     autoReload: false,
                     minCreditLimit: 5,
-                    referralCode: 'BILGE' + Math.floor(1000 + Math.random() * 9000), // Mock code gen
+                    referralCode: 'BILGE' + Math.floor(1000 + Math.random() * 9000),
                     istacoin: 0,
                     earnedCredits: 0
                 },
@@ -230,7 +235,6 @@ export const useStore = create<AppState>()(
                 set((state) => {
                     const updatedProjects = state.projects.map((p) => (p.id === id ? { ...p, ...updates } : p));
                     const updatedCurrent = state.currentProject?.id === id ? { ...state.currentProject, ...updates } : state.currentProject;
-
                     return { projects: updatedProjects, currentProject: updatedCurrent };
                 }),
 
@@ -239,8 +243,19 @@ export const useStore = create<AppState>()(
                 currentProject: state.currentProject?.id === id ? null : state.currentProject
             })),
 
+            toggleProjectFavorite: (id) => set((state) => {
+                const updatedProjects = state.projects.map(p =>
+                    p.id === id ? { ...p, isFavorite: !p.isFavorite } : p
+                );
+                // Also update currentProject if it matches
+                const updatedCurrent = state.currentProject?.id === id
+                    ? { ...state.currentProject, isFavorite: !state.currentProject.isFavorite }
+                    : state.currentProject;
+
+                return { projects: updatedProjects, currentProject: updatedCurrent };
+            }),
+
             addFileToProject: (projectId, file) => set((state) => {
-                // Mock variable generation from file
                 const mockVars: ProjectVariable[] = [
                     { id: '1', name: 'Age', type: 'scale', values: ['18-65'] },
                     { id: '2', name: 'Gender', type: 'nominal', values: ['Male', 'Female'] }
@@ -250,7 +265,7 @@ export const useStore = create<AppState>()(
                     p.id === projectId ? {
                         ...p,
                         files: [...(p.files || []), file],
-                        variables: [...(p.variables || []), ...mockVars] // Auto add vars
+                        variables: [...(p.variables || []), ...mockVars]
                     } : p
                 );
                 const updatedCurrent = state.currentProject?.id === projectId
@@ -278,7 +293,6 @@ export const useStore = create<AppState>()(
             chatHistory: [],
             addMessage: (message) => set((state) => {
                 const newHistory = [...state.chatHistory, message];
-
                 let updatedProjects = state.projects;
                 let updatedCurrent = state.currentProject;
 
@@ -306,10 +320,9 @@ export const useStore = create<AppState>()(
                 return { chatHistory: [], projects: updatedProjects, currentProject: updatedCurrent };
             }),
 
-            // UI State
-            isSidebarOpen: true, // Legacy (Mobile)
-            isLeftSidebarOpen: true, // Desktop Left
-            isRightSidebarOpen: true, // Desktop Right
+            isSidebarOpen: true,
+            isLeftSidebarOpen: true,
+            isRightSidebarOpen: true,
             aiMode: 'chat',
 
             toggleSidebar: () => set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),

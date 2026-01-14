@@ -87,14 +87,14 @@ export function VirtualAssistantChatbot() {
                         initial={{ scale: 0, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 0, opacity: 0 }}
-                        className="fixed bottom-6 right-6 z-50"
+                        className="fixed bottom-2 right-2 z-50"
                     >
                         <Button
                             onClick={() => setIsOpen(true)}
-                            className="h-14 w-14 rounded-full bg-[#860000] hover:bg-[#660000] text-white shadow-lg hover:shadow-xl transition-all"
+                            className="h-8 w-8 rounded-full bg-[#860000] hover:bg-[#660000] text-white shadow-lg hover:shadow-xl transition-all p-0 flex items-center justify-center"
                             size="icon"
                         >
-                            <MessageCircle className="h-6 w-6" />
+                            <MessageCircle className="h-4 w-4" />
                         </Button>
                     </motion.div>
                 )}
@@ -116,8 +116,8 @@ export function VirtualAssistantChatbot() {
                                     <AvatarFallback className="bg-white text-[#860000] font-bold">B</AvatarFallback>
                                 </Avatar>
                                 <div>
-                                    <h3 className="font-bold">Bilge Sanal Destek</h3>
-                                    <p className="text-xs opacity-80">Her zaman buradayız</p>
+                                    <h3 className="font-bold">Bilge Asistan</h3>
+                                    <p className="text-xs opacity-80">Akademik Analiz Rehberi</p>
                                 </div>
                             </div>
                             <Button
@@ -145,8 +145,8 @@ export function VirtualAssistantChatbot() {
                                         )}
                                         <div
                                             className={`rounded-2xl px-4 py-2 max-w-[80%] text-sm ${msg.role === 'user'
-                                                    ? 'bg-[#860000] text-white rounded-br-none'
-                                                    : 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white rounded-bl-none'
+                                                ? 'bg-[#860000] text-white rounded-br-none'
+                                                : 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white rounded-bl-none'
                                                 }`}
                                         >
                                             <p className="whitespace-pre-line">{msg.content}</p>

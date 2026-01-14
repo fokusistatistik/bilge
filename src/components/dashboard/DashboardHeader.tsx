@@ -1,8 +1,21 @@
 'use client';
 
 import { Button } from "@/components/ui/button";
-import { Home, Menu, User, LogOut, Settings, Languages, Coins, BrainCircuit } from "lucide-react";
-// ... (imports)
+import { Home, Menu, User, LogOut, Settings, Languages, Coins, BrainCircuit, Sun, Moon } from "lucide-react";
+import { useRouter, usePathname } from "next/navigation";
+import { CreditBadge } from '@/components/dashboard/CreditBadge';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useStore } from "@/store/useStore";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useSession, signOut } from "next-auth/react";
+import { translations } from "@/lib/translations";
 
 export function DashboardNavbar() {
     const router = useRouter();
@@ -30,6 +43,10 @@ export function DashboardNavbar() {
         if (pathname === '/dashboard' && currentProject) return currentProject.title;
         if (pathname === '/settings') return language === 'tr' ? 'Hesap Ayarları' : 'Account Settings';
         return 'Bilge Panel';
+    };
+
+    const toggleTheme = () => {
+        document.documentElement.classList.toggle('dark');
     };
 
     return (
@@ -102,9 +119,9 @@ export function DashboardNavbar() {
                 <CreditBadge />
 
                 {/* Theme Toggle */}
-                <Button variant="ghost" size="icon" className="hidden md:flex text-slate-500" onClick={() => document.documentElement.classList.toggle('dark')}>
-                    <Settings className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 absolute" />
-                    <Settings className="h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100 absolute" />
+                <Button variant="ghost" size="icon" className="hidden md:flex text-slate-500 hover:text-slate-900 dark:hover:text-amber-400" onClick={toggleTheme}>
+                    <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 absolute" />
+                    <Moon className="h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100 absolute" />
                     <span className="sr-only">Toggle theme</span>
                 </Button>
 

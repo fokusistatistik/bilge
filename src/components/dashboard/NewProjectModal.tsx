@@ -39,18 +39,25 @@ interface NewProjectModalProps {
     onClose?: () => void;
 }
 
-const COLORS = [
-    { name: 'Kırmızı', value: '#ef4444' },
-    { name: 'Mavi', value: '#3b82f6' },
-    { name: 'Yeşil', value: '#22c55e' },
-    { name: 'Mor', value: '#a855f7' },
-    { name: 'Turuncu', value: '#f97316' },
-    { name: 'Gri', value: '#64748b' },
+// Consistent with DashboardPage colors
+const PROJECT_COLORS = [
+    { id: 'indigo', label: 'İndigo', class: 'bg-indigo-600' },
+    { id: 'red', label: 'Bordo', class: 'bg-[#860000]' },
+    { id: 'blue', label: 'Mavi', class: 'bg-blue-600' },
+    { id: 'emerald', label: 'Zümrüt', class: 'bg-emerald-600' },
+    { id: 'amber', label: 'Kehribar', class: 'bg-amber-600' },
+    { id: 'purple', label: 'Mor', class: 'bg-purple-600' },
+    { id: 'cyan', label: 'Turkuaz', class: 'bg-cyan-600' },
+    { id: 'rose', label: 'Gül', class: 'bg-rose-600' },
+    { id: 'teal', label: 'Teal', class: 'bg-teal-600' },
+    { id: 'lime', label: 'Limon', class: 'bg-lime-600' },
+    { id: 'fuchsia', label: 'Fuçya', class: 'bg-fuchsia-600' },
+    { id: 'sky', label: 'Gök', class: 'bg-sky-600' },
 ];
 
 export function NewProjectModal({ className, trigger }: NewProjectModalProps) {
     const { addProject, language } = useStore();
-    const t = translations[language].dashboard; // Using basic dashboard translations where applicable
+    const t = translations[language].dashboard;
 
     const [isOpen, setIsOpen] = useState(false);
     const [formData, setFormData] = useState({
@@ -59,9 +66,9 @@ export function NewProjectModal({ className, trigger }: NewProjectModalProps) {
         studyType: '',
         academicBranch: '',
         importance: 'medium',
-        color: '#ef4444',
+        color: 'red', // Default ID
         isFavorite: false,
-        scale: 'basic',
+        methodLevel: 'basic', // Renamed from scale
         targetLanguage: 'tr',
         includePowerAnalysis: false
     });
@@ -76,15 +83,16 @@ export function NewProjectModal({ className, trigger }: NewProjectModalProps) {
         const newProject: Project = {
             id: Date.now().toString(),
             title: formData.title,
-            abstract: formData.abstract, // Keep original abstract clean if needed elsewhere
+            abstract: formData.abstract,
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             studyType: formData.studyType as any,
             academicBranch: formData.academicBranch,
-            importance: formData.importance as 'low' | 'medium' | 'high',
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            importance: formData.importance as any,
             color: formData.color,
             isFavorite: formData.isFavorite,
             description: descriptionWithPower,
-            scale: formData.scale as 'basic' | 'intermediate' | 'advanced',
+            methodLevel: formData.methodLevel as 'basic' | 'intermediate' | 'advanced',
             targetLanguage: formData.targetLanguage as 'tr' | 'en',
             status: 'active',
             usedCredits: 0,
@@ -97,15 +105,16 @@ export function NewProjectModal({ className, trigger }: NewProjectModalProps) {
 
         addProject(newProject);
         setIsOpen(false);
+        // Reset form
         setFormData({
             title: '',
             abstract: '',
             studyType: '',
             academicBranch: '',
             importance: 'medium',
-            color: '#ef4444',
+            color: 'red',
             isFavorite: false,
-            scale: 'basic',
+            methodLevel: 'basic',
             targetLanguage: 'tr',
             includePowerAnalysis: false
         });
@@ -207,21 +216,36 @@ export function NewProjectModal({ className, trigger }: NewProjectModalProps) {
                         </div>
                     </div>
 
-                    {/* Scale & Language Selection */}
+                    {/* Method Level & Language Selection */}
                     <div className="grid grid-cols-2 gap-4">
                         <div className="grid gap-2">
-                            <Label>İstatistiksel Beklenti</Label>
+                            <Label>İstatistiksel Metotlar</Label>
                             <Select
-                                value={formData.scale}
-                                onValueChange={(value) => setFormData({ ...formData, scale: value })}
+                                value={formData.methodLevel}
+                                onValueChange={(value) => setFormData({ ...formData, methodLevel: value })}
                             >
                                 <SelectTrigger>
                                     <SelectValue placeholder="Seçiniz" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="basic">Temel (Basic)</SelectItem>
-                                    <SelectItem value="intermediate">Orta (Intermediate)</SelectItem>
-                                    <SelectItem value="advanced">İleri (Advanced)</SelectItem>
+                                    <SelectItem value="basic">
+                                        <div className="flex flex-col text-left">
+                                            <span className="font-medium">Temel (Basic)</span>
+                                            <span className="text-[10px] text-slate-400">T-Test, ANOVA, Ki-Kare</span>
+                                        </div>
+                                    </SelectItem>
+                                    <SelectItem value="intermediate">
+                                        <div className="flex flex-col text-left">
+                                            <span className="font-medium">Orta (Intermediate)</span>
+                                            <span className="text-[10px] text-slate-400">Regresyon, Faktör Analizi</span>
+                                        </div>
+                                    </SelectItem>
+                                    <SelectItem value="advanced">
+                                        <div className="flex flex-col text-left">
+                                            <span className="font-medium">İleri (Advanced)</span>
+                                            <span className="text-[10px] text-slate-400">ML, SEM, Çoklu Tablo, Lojistik</span>
+                                        </div>
+                                    </SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
@@ -270,21 +294,21 @@ export function NewProjectModal({ className, trigger }: NewProjectModalProps) {
                             </Select>
                         </div>
 
-                        <div className="grid gap-2">
+                        <div className="grid gap-2 col-span-2">
                             <Label>Proje Rengi</Label>
-                            <div className="flex gap-2 mt-1">
-                                {COLORS.map((c) => (
+                            <div className="flex flex-wrap gap-2 mt-1">
+                                {PROJECT_COLORS.map((c) => (
                                     <button
-                                        key={c.value}
-                                        onClick={() => setFormData({ ...formData, color: c.value })}
+                                        key={c.id}
+                                        onClick={() => setFormData({ ...formData, color: c.id })}
                                         className={cn(
                                             "w-6 h-6 rounded-full border-2 transition-all",
-                                            formData.color === c.value ? "border-slate-900 scale-110" : "border-transparent opacity-70 hover:opacity-100"
+                                            formData.color === c.id ? "border-slate-900 scale-110" : "border-slate-100 opacity-70 hover:opacity-100"
                                         )}
-                                        style={{ backgroundColor: c.value }}
-                                        title={c.name}
-                                        type="button"
-                                    />
+                                        style={{}} // Use CSS class for display if possible, or style. Here using class on div below
+                                    >
+                                        <div className={cn("w-full h-full rounded-full", c.class)} />
+                                    </button>
                                 ))}
                             </div>
                         </div>
