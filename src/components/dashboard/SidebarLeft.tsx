@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useStore, Project } from "@/store/useStore";
-import { Layout, MessageSquare, ChevronLeft, Settings, User, LogOut, Plus, MoreHorizontal, Archive, Trash2, Power, PlayCircle, PauseCircle } from "lucide-react";
+import { Layout, MessageSquare, ChevronLeft, ChevronRight, Settings, User, LogOut, Plus, MoreHorizontal, Archive, Trash2, Power, PlayCircle, PauseCircle } from "lucide-react";
 import { NewProjectModal } from "./NewProjectModal";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useSession, signOut } from "next-auth/react";
@@ -15,15 +15,12 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-    DropdownMenuSub,
-    DropdownMenuSubTrigger,
-    DropdownMenuSubContent
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export function SidebarLeft() {
-    const { projects, currentProject, setCurrentProject, updateProject, deleteProject, user, language } = useStore();
+    const { projects, currentProject, setCurrentProject, updateProject, deleteProject, user, language, toggleLeftSidebar, isLeftSidebarOpen } = useStore();
     const { data: session } = useSession();
     const router = useRouter();
     const [showArchived, setShowArchived] = useState(false);
@@ -50,6 +47,17 @@ export function SidebarLeft() {
     // Filter projects
     const displayedProjects = projects.filter(p => !p.status || (showArchived ? true : p.status !== 'archived'));
 
+    // Collapsed View
+    if (!isLeftSidebarOpen) {
+        return (
+            <div className="w-12 border-r bg-slate-50 dark:bg-slate-900/50 flex flex-col h-screen hidden md:flex items-center pt-4 transition-all duration-300">
+                <Button variant="ghost" size="icon" onClick={toggleLeftSidebar} title="Paneli Göster">
+                    <ChevronRight className="h-4 w-4" />
+                </Button>
+            </div>
+        );
+    }
+
     return (
         <div className="w-64 border-r bg-slate-50 dark:bg-slate-900/50 flex flex-col h-screen hidden md:flex relative group transition-all duration-300">
             {/* Header */}
@@ -58,6 +66,9 @@ export function SidebarLeft() {
                     <Layout className="h-5 w-5 text-[#860000]" />
                     <span>Bilge Panel</span>
                 </div>
+                <Button variant="ghost" size="icon" className="h-6 w-6" onClick={toggleLeftSidebar}>
+                    <ChevronLeft className="h-4 w-4" />
+                </Button>
             </div>
 
             {/* New Project Action */}
@@ -161,46 +172,6 @@ export function SidebarLeft() {
                     </div>
                 </div>
             </ScrollArea>
-
-            {/* User Profile & Footer */}
-            <div className="p-4 border-t mt-auto bg-white dark:bg-slate-900">
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-700">
-                            <Avatar className="h-9 w-9 border-2 border-white dark:border-slate-800 shadow-sm">
-                                <AvatarImage src={user?.profileImage || user?.image || session?.user?.image || `https://api.dicebear.com/7.x/initials/svg?seed=${user?.name || session?.user?.name || 'User'}`} />
-                                <AvatarFallback><User className="h-4 w-4" /></AvatarFallback>
-                            </Avatar>
-                            <div className="flex-1 min-w-0 text-left">
-                                <p className="text-sm font-medium truncate text-slate-900 dark:text-slate-100">
-                                    {user?.name || session?.user?.name || (language === 'tr' ? 'Misafir' : 'Guest')}
-                                </p>
-                                <p className="text-xs text-slate-500 truncate">
-                                    {user?.email || session?.user?.email || (language === 'tr' ? 'Giriş Yapılmadı' : 'Not Logged In')}
-                                </p>
-                            </div>
-                            <Settings className="h-4 w-4 text-slate-400" />
-                        </div>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-56 mb-2">
-                        <DropdownMenuLabel>{language === 'tr' ? 'Hesabım' : 'My Account'}</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => router.push('/settings')}>
-                            <User className="mr-2 h-4 w-4" />
-                            {language === 'tr' ? 'Profil Ayarları' : 'Profile Settings'}
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => router.push('/settings?tab=subscription')}>
-                            <Layout className="mr-2 h-4 w-4" />
-                            {language === 'tr' ? 'Abonelik & Kredi' : 'Subscription & Credit'}
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem className="text-red-600 focus:text-red-600" onClick={handleLogout}>
-                            <LogOut className="mr-2 h-4 w-4" />
-                            {language === 'tr' ? 'Çıkış Yap' : 'Log Out'}
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            </div>
         </div>
     );
 }

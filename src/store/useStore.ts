@@ -129,6 +129,15 @@ interface AppState {
     // UI State
     isSidebarOpen: boolean;
     toggleSidebar: () => void;
+
+    isLeftSidebarOpen: boolean;
+    toggleLeftSidebar: () => void;
+
+    isRightSidebarOpen: boolean;
+    toggleRightSidebar: () => void;
+
+    aiMode: 'chat' | 'analysis' | 'consultancy';
+    setAiMode: (mode: 'chat' | 'analysis' | 'consultancy') => void;
 }
 
 export const useStore = create<AppState>()(
@@ -281,8 +290,16 @@ export const useStore = create<AppState>()(
                 return { chatHistory: [], projects: updatedProjects, currentProject: updatedCurrent };
             }),
 
-            isSidebarOpen: true,
+            // UI State
+            isSidebarOpen: true, // Legacy (Mobile)
+            isLeftSidebarOpen: true, // Desktop Left
+            isRightSidebarOpen: true, // Desktop Right
+            aiMode: 'chat',
+
             toggleSidebar: () => set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),
+            toggleLeftSidebar: () => set((state) => ({ isLeftSidebarOpen: !state.isLeftSidebarOpen })),
+            toggleRightSidebar: () => set((state) => ({ isRightSidebarOpen: !state.isRightSidebarOpen })),
+            setAiMode: (mode) => set({ aiMode: mode }),
         }),
         {
             name: 'bilge-storage',

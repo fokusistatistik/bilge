@@ -9,10 +9,12 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 
 export function SidebarRight() {
-    const { currentProject } = useStore();
+    const { currentProject, isRightSidebarOpen } = useStore();
     const [isDataOpen, setIsDataOpen] = useState(true);
     const [isReportsOpen, setIsReportsOpen] = useState(true);
     const [isVizOpen, setIsVizOpen] = useState(true);
+
+    if (!isRightSidebarOpen) return null;
 
     if (!currentProject) {
         return (
