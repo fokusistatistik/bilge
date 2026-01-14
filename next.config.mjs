@@ -30,6 +30,7 @@ const nextConfig = {
     images: {
         remotePatterns: [
             { protocol: 'https', hostname: 'static.fokusistatistik.com' },
+            { protocol: 'https', hostname: 'www.fokusistatistik.com' },
             { protocol: 'https', hostname: 'lh3.googleusercontent.com' }, // Google Profil Fotoları İçin
             { protocol: 'https', hostname: 'api.dicebear.com' },
         ],

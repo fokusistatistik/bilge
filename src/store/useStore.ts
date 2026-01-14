@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
 
 export interface Message {
     id: string;
@@ -6,32 +7,99 @@ export interface Message {
     content: string;
     type?: 'text' | 'widget' | 'file-upload';
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    widgetData?: any; // For charts, tables, etc.
+    widgetData?: any;
     timestamp: Date;
+}
+
+export interface ProjectMember {
+    id: string;
+    email: string;
+    role: 'viewer' | 'editor';
+    status: 'pending' | 'accepted';
+}
+
+export interface ProjectVariable {
+    id: string;
+    name: string; // Etiket
+    type: 'nominal' | 'ordinal' | 'scale' | 'date';
+    values: string[]; // Örnek değerler
 }
 
 export interface Project {
     id: string;
     title: string;
-    abstract?: string;
+    description?: string;
+
+    // Academic Info
     studyType?: 'thesis' | 'article' | 'clinical_trial' | 'other';
     academicBranch?: string;
-    files: { name: string; url: string; type: string }[];
+
+    // Configuration
+    scale?: 'basic' | 'intermediate' | 'advanced';
+    targetLanguage?: 'tr' | 'en';
+    status?: 'active' | 'passive' | 'archived';
+
+    // Advanced Settings
+    decimalSeparator?: '.' | ',';
+    decimalPrecision?: number;
+    targetTest?: string;
+    members?: ProjectMember[];
+    variables?: ProjectVariable[];
+
+    // Metrics
+    usedCredits: number;
+
+    // Content
+    files: { name: string; url: string; type: string; date: Date }[];
+    outputs: { name: string; url: string; type: 'chart' | 'report' | 'image' | 'other'; date: Date }[];
     reports: { name: string; url: string; date: Date }[];
+    messages: Message[];
+
+    // Meta
     createdAt: Date;
+    color?: string;
+    importance?: 'low' | 'medium' | 'high';
+    isFavorite?: boolean;
 }
 
 export interface UserProfile {
+    id?: string;
     name: string;
-    phone: string;
-    academicTitle: string;
-    institution: string;
-    academicField: string;
-    isProfileComplete: boolean;
+    email: string;
+    image?: string;
+    profileImage?: string;
+
+    // Personal Info
+    phone?: string;
+    country?: string;
+    birthDate?: Date;
+
+    // Academic Info
+    academicTitle?: string;
+    institution?: string;
+    academicField?: string;
+    researchInterests?: string[]; // New: İlgi alanları
+
+    // Credit & Referral
     credits: number;
+    autoReload?: boolean;
+    minCreditLimit?: number;
+    billingAddress?: string;
+    referralCode?: string; // My unique code
+    istacoin?: number;
+    earnedCredits?: number; // Total gained from refs
+
+    // App Settings
+    isProfileComplete: boolean;
+    language?: 'tr' | 'en';
+    theme?: string;
 }
 
 interface AppState {
+    // Language
+    language: 'tr' | 'en';
+    setLanguage: (lang: 'tr' | 'en') => void;
+
     // User Session
     user: UserProfile | null;
     setUser: (user: Partial<UserProfile>) => void;
@@ -41,6 +109,7 @@ interface AppState {
     creditBalance: number;
     deductCredits: (amount: number) => boolean;
     addCredits: (amount: number) => void;
+    addProjectUsage: (projectId: string, amount: number) => void;
 
     // Projects
     projects: Project[];
@@ -48,6 +117,9 @@ interface AppState {
     setCurrentProject: (project: Project | null) => void;
     addProject: (project: Project) => void;
     updateProject: (id: string, updates: Partial<Project>) => void;
+    deleteProject: (id: string) => void;
+    addFileToProject: (projectId: string, file: { name: string; url: string; type: string; date: Date }) => void;
+    addOutputToProject: (projectId: string, output: { name: string; url: string; type: 'chart' | 'report' | 'image' | 'other'; date: Date }) => void;
 
     // Chat
     chatHistory: Message[];
@@ -59,61 +131,168 @@ interface AppState {
     toggleSidebar: () => void;
 }
 
-export const useStore = create<AppState>((set, get) => ({
-    // User
-    user: null,
-    setUser: (user) => set({
-        user: {
-            name: user.name || '',
-            phone: user.phone || '',
-            academicTitle: user.academicTitle || '',
-            institution: user.institution || '',
-            academicField: user.academicField || '',
-            isProfileComplete: user.isProfileComplete || false,
-            credits: user.credits || 100
-        }
-    }),
-    updateUser: (updates) => set((state) => ({
-        user: state.user ? { ...state.user, ...updates } : null
-    })),
+export const useStore = create<AppState>()(
+    persist(
+        (set, get) => ({
+            language: 'tr',
+            setLanguage: (lang) => set({ language: lang }),
 
-    // Credits
-    creditBalance: 100, // Starting balance
-    deductCredits: (amount) => {
-        const { creditBalance } = get();
-        if (creditBalance >= amount) {
-            set({ creditBalance: creditBalance - amount });
-            return true;
-        }
-        return false;
-    },
-    addCredits: (amount) => set((state) => ({ creditBalance: state.creditBalance + amount })),
+            user: null,
+            setUser: (userData) => set({
+                user: {
+                    id: userData.id || 'guest',
+                    name: userData.name || '',
+                    email: userData.email || '',
+                    image: userData.image,
+                    profileImage: userData.profileImage,
+                    credits: userData.credits || 10,
+                    isProfileComplete: userData.isProfileComplete || false,
+                    language: 'tr',
+                    theme: 'light',
+                    autoReload: false,
+                    minCreditLimit: 5,
+                    referralCode: 'BILGE' + Math.floor(1000 + Math.random() * 9000), // Mock code gen
+                    istacoin: 0,
+                    earnedCredits: 0
+                },
+                creditBalance: userData.credits || 10
+            }),
+            updateUser: (updates) => set((state) => ({
+                user: state.user ? { ...state.user, ...updates } : null
+            })),
 
-    // Projects
-    projects: [],
-    currentProject: null,
-    setCurrentProject: (project) => set({ currentProject: project }),
-    addProject: (project) => set((state) => ({ projects: [project, ...state.projects], currentProject: project })),
-    updateProject: (id, updates) =>
-        set((state) => ({
-            projects: state.projects.map((p) => (p.id === id ? { ...p, ...updates } : p)),
-            currentProject: state.currentProject?.id === id ? { ...state.currentProject, ...updates } : state.currentProject,
-        })),
+            creditBalance: 10,
+            deductCredits: (amount) => {
+                const { creditBalance } = get();
+                if (creditBalance >= amount) {
+                    set({ creditBalance: creditBalance - amount });
+                    return true;
+                }
+                return false;
+            },
+            addCredits: (amount) => set((state) => ({ creditBalance: state.creditBalance + amount })),
 
-    // Chat
-    chatHistory: [
+            addProjectUsage: (projectId, amount) => set((state) => {
+                const updatedProjects = state.projects.map(p =>
+                    p.id === projectId ? { ...p, usedCredits: (p.usedCredits || 0) + amount } : p
+                );
+                const updatedCurrent = state.currentProject?.id === projectId
+                    ? { ...state.currentProject, usedCredits: (state.currentProject.usedCredits || 0) + amount }
+                    : state.currentProject;
+
+                return {
+                    projects: updatedProjects,
+                    currentProject: updatedCurrent,
+                    creditBalance: state.creditBalance - amount
+                };
+            }),
+
+            projects: [],
+            currentProject: null,
+
+            setCurrentProject: (project) => set(() => ({
+                currentProject: project,
+                chatHistory: project ? (project.messages || []) : []
+            })),
+
+            addProject: (project) => set((state) => ({
+                projects: [project, ...state.projects],
+                currentProject: project,
+                chatHistory: []
+            })),
+
+            updateProject: (id, updates) =>
+                set((state) => {
+                    const updatedProjects = state.projects.map((p) => (p.id === id ? { ...p, ...updates } : p));
+                    const updatedCurrent = state.currentProject?.id === id ? { ...state.currentProject, ...updates } : state.currentProject;
+
+                    return { projects: updatedProjects, currentProject: updatedCurrent };
+                }),
+
+            deleteProject: (id) => set((state) => ({
+                projects: state.projects.filter(p => p.id !== id),
+                currentProject: state.currentProject?.id === id ? null : state.currentProject
+            })),
+
+            addFileToProject: (projectId, file) => set((state) => {
+                // Mock variable generation from file
+                const mockVars: ProjectVariable[] = [
+                    { id: '1', name: 'Age', type: 'scale', values: ['18-65'] },
+                    { id: '2', name: 'Gender', type: 'nominal', values: ['Male', 'Female'] }
+                ];
+
+                const updatedProjects = state.projects.map(p =>
+                    p.id === projectId ? {
+                        ...p,
+                        files: [...(p.files || []), file],
+                        variables: [...(p.variables || []), ...mockVars] // Auto add vars
+                    } : p
+                );
+                const updatedCurrent = state.currentProject?.id === projectId
+                    ? {
+                        ...state.currentProject,
+                        files: [...(state.currentProject.files || []), file],
+                        variables: [...(state.currentProject.variables || []), ...mockVars]
+                    }
+                    : state.currentProject;
+
+                return { projects: updatedProjects, currentProject: updatedCurrent };
+            }),
+
+            addOutputToProject: (projectId, output) => set((state) => {
+                const updatedProjects = state.projects.map(p =>
+                    p.id === projectId ? { ...p, outputs: [...(p.outputs || []), output] } : p
+                );
+                const updatedCurrent = state.currentProject?.id === projectId
+                    ? { ...state.currentProject, outputs: [...(state.currentProject.outputs || []), output] }
+                    : state.currentProject;
+
+                return { projects: updatedProjects, currentProject: updatedCurrent };
+            }),
+
+            chatHistory: [],
+            addMessage: (message) => set((state) => {
+                const newHistory = [...state.chatHistory, message];
+
+                let updatedProjects = state.projects;
+                let updatedCurrent = state.currentProject;
+
+                if (state.currentProject) {
+                    updatedProjects = state.projects.map(p =>
+                        p.id === state.currentProject!.id ? { ...p, messages: newHistory } : p
+                    );
+                    updatedCurrent = { ...state.currentProject, messages: newHistory };
+                }
+
+                return { chatHistory: newHistory, projects: updatedProjects, currentProject: updatedCurrent };
+            }),
+
+            clearChat: () => set((state) => {
+                let updatedProjects = state.projects;
+                let updatedCurrent = state.currentProject;
+
+                if (state.currentProject) {
+                    updatedProjects = state.projects.map(p =>
+                        p.id === state.currentProject!.id ? { ...p, messages: [] } : p
+                    );
+                    updatedCurrent = { ...state.currentProject, messages: [] };
+                }
+
+                return { chatHistory: [], projects: updatedProjects, currentProject: updatedCurrent };
+            }),
+
+            isSidebarOpen: true,
+            toggleSidebar: () => set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),
+        }),
         {
-            id: 'welcome-1',
-            role: 'assistant',
-            content: 'Merhaba! Ben Bilge, Yapay Zeka İstatistik Mentörünüz. Araştırmanızda size nasıl yardımcı olabilirim?',
-            timestamp: new Date(),
-            type: 'text',
-        },
-    ],
-    addMessage: (message) => set((state) => ({ chatHistory: [...state.chatHistory, message] })),
-    clearChat: () => set({ chatHistory: [] }),
-
-    // UI
-    isSidebarOpen: true,
-    toggleSidebar: () => set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),
-}));
+            name: 'bilge-storage',
+            storage: createJSONStorage(() => localStorage),
+            partialize: (state) => ({
+                language: state.language,
+                user: state.user,
+                projects: state.projects,
+                creditBalance: state.creditBalance
+            }),
+        }
+    )
+);

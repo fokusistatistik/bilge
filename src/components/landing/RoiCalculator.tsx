@@ -30,7 +30,7 @@ export function RoiCalculator() {
 
     return (
         <Card className="w-full max-w-4xl mx-auto bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden">
-            <div className="bg-indigo-600 p-6 text-white text-center">
+            <div className="bg-[#860000] p-6 text-white text-center">
                 <h3 className="text-2xl font-bold flex items-center justify-center gap-2">
                     <Calculator className="h-6 w-6" /> Yatırım Getirisi (ROI) Hesaplayıcı
                 </h3>
@@ -42,7 +42,7 @@ export function RoiCalculator() {
                     <div className="space-y-4">
                         <div className="flex justify-between">
                             <label className="font-semibold text-slate-700 dark:text-slate-300">Aylık Analiz Sayısı</label>
-                            <span className="font-bold text-indigo-600">{monthlyCount}</span>
+                            <span className="font-bold text-[#860000]">{monthlyCount}</span>
                         </div>
                         <Slider
                             value={[monthlyCount]}
@@ -56,7 +56,7 @@ export function RoiCalculator() {
                     <div className="space-y-4">
                         <div className="flex justify-between">
                             <label className="font-semibold text-slate-700 dark:text-slate-300">Analiz Başına Ortalama Süre (Saat)</label>
-                            <span className="font-bold text-indigo-600">{avgTime} Saat</span>
+                            <span className="font-bold text-[#860000]">{avgTime} Saat</span>
                         </div>
                         <Slider
                             value={[avgTime]}
@@ -70,7 +70,7 @@ export function RoiCalculator() {
                     <div className="space-y-4">
                         <div className="flex justify-between">
                             <label className="font-semibold text-slate-700 dark:text-slate-300">Saatlik Değeriniz ($)</label>
-                            <span className="font-bold text-indigo-600">${hourlyRate}</span>
+                            <span className="font-bold text-[#860000]">${hourlyRate}</span>
                         </div>
                         <Slider
                             value={[hourlyRate]}
@@ -81,7 +81,7 @@ export function RoiCalculator() {
                         />
                     </div>
 
-                    <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white mt-4 pointer-events-none">
+                    <Button className="w-full bg-[#860000] hover:bg-red-700 text-white mt-4 pointer-events-none">
                         Otomatik Hesaplanıyor
                     </Button>
                 </div>
@@ -91,7 +91,7 @@ export function RoiCalculator() {
                     <div className="rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden text-sm">
                         <div className="grid grid-cols-4 bg-slate-100 dark:bg-slate-800 p-3 font-bold border-b border-slate-200 dark:border-slate-700 text-center">
                             <div className="text-left pl-2">Metrik</div>
-                            <div className="text-indigo-600">Bilge</div>
+                            <div className="text-[#860000]">Bilge</div>
                             <div className="text-slate-500">Geleneksel</div>
                             <div className="text-green-600">Fark</div>
                         </div>
@@ -114,9 +114,9 @@ export function RoiCalculator() {
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-4 p-3 bg-indigo-50 dark:bg-indigo-900/10 text-center items-center">
-                            <div className="font-bold text-left pl-2 text-indigo-900 dark:text-indigo-300">Aylık Maliyet</div>
-                            <div className="font-bold text-indigo-700 dark:text-indigo-400">${bilgeMonthlyCost.toFixed(0)}</div>
+                        <div className="grid grid-cols-4 p-3 bg-red-50 dark:bg-red-900/10 text-center items-center">
+                            <div className="font-bold text-left pl-2 text-[#860000] dark:text-red-300">Aylık Maliyet</div>
+                            <div className="font-bold text-[#860000] dark:text-red-400">${bilgeMonthlyCost.toFixed(0)}</div>
                             <div className="text-slate-500 line-through">${competitorMonthlyCost.toFixed(0)}</div>
                             <div className="font-bold text-green-600 text-md">
                                 %{efficiencyIncrease}

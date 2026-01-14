@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Merriweather } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers/SessionProvider";
+import { CookieConsent } from "@/components/common/CookieConsent";
+import { GlobalChatbot } from "@/components/common/GlobalChatbot";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -61,12 +63,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="tr">
-
       <body
         className={`${inter.variable} ${merriweather.variable} font-sans antialiased bg-background text-foreground`}
       >
         <Providers>
           {children}
+          <CookieConsent />
+          <GlobalChatbot />
         </Providers>
       </body>
     </html>

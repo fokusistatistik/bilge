@@ -1,18 +1,19 @@
 'use client';
 
 import { useSession } from "next-auth/react";
+import { useStore } from "@/store/useStore";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { User, Mail, CreditCard, Shield, Settings, BookOpen, GraduationCap, Building2, MapPin, Globe, Award, Activity, Loader2 } from "lucide-react";
+import { User, Mail, CreditCard, Shield, Settings, BookOpen, GraduationCap, Building2, MapPin, Globe, Award, Activity, Loader2, Camera, Trash2, Upload } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useToast } from "@/components/ui/toast";
 
 // Initial mock data (In real app, fetch this from API on mount)
@@ -54,9 +55,26 @@ const initialData = {
 
 export default function SettingsPage() {
     const { data: session } = useSession();
-    const { toast } = useToast(); // Assuming standard shadcn useToast hook exists or is mocked
+    const { user, updateUser } = useStore();
+    const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
     const [formData, setFormData] = useState(initialData);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    // Sync store user data with form
+    useEffect(() => {
+        if (user) {
+            setFormData(prev => ({
+                ...prev,
+                profile: {
+                    ...prev.profile,
+                    phone: user.phone || prev.profile.phone,
+                    academicTitle: user.academicTitle || prev.profile.academicTitle,
+                    institution: user.institution || prev.profile.institution,
+                }
+            }));
+        }
+    }, [user]);
 
     const handleInputChange = (section: 'profile', field: string, value: string) => {
         setFormData(prev => ({
@@ -68,33 +86,41 @@ export default function SettingsPage() {
         }));
     };
 
-    const handleSave = async (section: 'profile' | 'academic') => {
-        setIsLoading(true);
-        try {
-            const response = await fetch('/api/user/update', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    update_type: section,
-                    profile_data: formData.profile
-                })
-            });
-
-            if (response.ok) {
-                // Basit bir toast simülasyonu (eğer hook yoksa alert düşer)
-                alert("✅ Bilgiler başarıyla güncellendi!");
-                // toast({ title: "Başarılı", description: "Bilgileriniz güncellendi." });
-            } else {
-                throw new Error('Update failed');
-            }
-        } catch (error) {
-            console.error(error);
-            alert("❌ Güncelleme sırasında bir hata oluştu.");
-            // toast({ title: "Hata", description: "Bir sorun oluştu.", variant: "destructive" });
-        } finally {
-            setIsLoading(false);
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const result = reader.result as string;
+                updateUser({ profileImage: result });
+                toast({
+                    title: "Fotoğraf Güncellendi",
+                    description: "Profil fotoğrafınız başarıyla değiştirildi."
+                });
+            };
+            reader.readAsDataURL(file);
         }
     };
+
+    const handleSave = async (section: 'profile' | 'academic') => {
+        setIsLoading(true);
+        // Simulate API call
+        setTimeout(() => {
+            setIsLoading(false);
+            if (section === 'profile') {
+                updateUser({
+                    phone: formData.profile.phone,
+                    // city: formData.profile.city 
+                });
+            }
+            toast({
+                title: "Başarılı",
+                description: "Bilgileriniz güncellendi."
+            });
+        }, 1000);
+    };
+
+    const displayImage = user?.profileImage || user?.image || session?.user?.image || '';
 
     return (
         <div className="flex flex-col min-h-screen bg-slate-50/50 dark:bg-slate-950/50">
@@ -142,18 +168,77 @@ export default function SettingsPage() {
                         <TabsContent value="profile" className="space-y-6 m-0 animate-in fade-in slide-in-from-right-4 duration-300">
                             <Card>
                                 <CardHeader>
+                                    <CardTitle>Profil Fotoğrafı</CardTitle>
+                                    <CardDescription>Sizi temsil edecek bir fotoğraf yükleyin.</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="flex flex-col sm:flex-row items-center gap-6">
+                                        <div className="relative group">
+                                            <Avatar className="h-24 w-24 border-4 border-slate-100 dark:border-slate-800 shadow-md">
+                                                <AvatarImage src={displayImage} className="object-cover" />
+                                                <AvatarFallback className="text-2xl bg-slate-200 text-slate-500">
+                                                    {user?.name?.charAt(0) || session?.user?.name?.charAt(0) || 'U'}
+                                                </AvatarFallback>
+                                            </Avatar>
+                                            <button
+                                                onClick={() => fileInputRef.current?.click()}
+                                                className="absolute bottom-0 right-0 p-1.5 bg-[#860000] text-white rounded-full shadow-lg hover:bg-[#660000] transition-colors"
+                                                title="Fotoğrafı Değiştir"
+                                            >
+                                                <Camera className="h-4 w-4" />
+                                            </button>
+                                        </div>
+                                        <div className="flex-1 space-y-2 text-center sm:text-left">
+                                            <h3 className="font-semibold text-lg">{user?.name || session?.user?.name}</h3>
+                                            <p className="text-sm text-slate-500">JPG, GIF veya PNG. Maksimum 2MB.</p>
+                                            <div className="flex gap-2 justify-center sm:justify-start">
+                                                <input
+                                                    type="file"
+                                                    ref={fileInputRef}
+                                                    onChange={handleFileChange}
+                                                    className="hidden"
+                                                    accept="image/*"
+                                                />
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => fileInputRef.current?.click()}
+                                                >
+                                                    <Upload className="h-4 w-4 mr-2" />
+                                                    Fotoğraf Yükle
+                                                </Button>
+                                                {displayImage && (
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                                        onClick={() => updateUser({ profileImage: undefined })}
+                                                    >
+                                                        <Trash2 className="h-4 w-4 mr-2" />
+                                                        Kaldır
+                                                    </Button>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+
+                            <Card>
+                                <CardHeader>
                                     <CardTitle>Kimlik Bilgileri</CardTitle>
                                     <CardDescription>Kişisel iletişim bilgilerinizi güncelleyin.</CardDescription>
                                 </CardHeader>
                                 <CardContent className="space-y-6">
-                                    <div className="flex items-center gap-6 p-4 bg-slate-50 rounded-xl">
-                                        <Avatar className="h-20 w-20"><AvatarImage src={session?.user?.image || ''} /><AvatarFallback><User /></AvatarFallback></Avatar>
-                                        <div>
-                                            <h3 className="text-xl font-bold">{session?.user?.name}</h3>
-                                            <p className="text-slate-500">{session?.user?.email}</p>
-                                        </div>
-                                    </div>
                                     <div className="grid gap-6 md:grid-cols-2">
+                                        <div className="space-y-2">
+                                            <Label>Ad Soyad</Label>
+                                            <Input value={user?.name || session?.user?.name || ''} disabled className="bg-slate-50" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label>E-posta</Label>
+                                            <Input value={user?.email || session?.user?.email || ''} disabled className="bg-slate-50" />
+                                        </div>
                                         <div className="space-y-2">
                                             <Label>Telefon</Label>
                                             <Input

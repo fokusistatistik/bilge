@@ -118,7 +118,7 @@ export function EnhancedFeaturesSection() {
                         viewport={{ once: true }}
                         transition={{ duration: 0.5 }}
                     >
-                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 text-sm font-medium mb-4">
+                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-50 dark:bg-red-900/30 text-[#860000] dark:text-red-400 text-sm font-medium mb-4">
                             <Sparkles className="h-4 w-4" />
                             <span>Özellikler</span>
                         </div>
@@ -144,7 +144,7 @@ export function EnhancedFeaturesSection() {
                                 transition={{ duration: 0.5, delay: index * 0.1 }}
                             >
                                 <Card
-                                    className="group cursor-pointer border-2 border-slate-200 dark:border-slate-800 hover:border-indigo-300 dark:hover:border-indigo-700 transition-all duration-300 hover:shadow-xl h-full"
+                                    className="group cursor-pointer border-2 border-slate-200 dark:border-slate-800 hover:border-red-300 dark:hover:border-red-700 transition-all duration-300 hover:shadow-xl h-full"
                                     onClick={() => setSelectedFeature(index)}
                                 >
                                     <CardContent className="p-6">
@@ -152,7 +152,7 @@ export function EnhancedFeaturesSection() {
                                             <Icon className="h-7 w-7 text-white" />
                                         </div>
 
-                                        <h3 className="font-bold text-xl mb-2 text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                                        <h3 className="font-bold text-xl mb-2 text-slate-900 dark:text-white group-hover:text-[#860000] dark:group-hover:text-red-400 transition-colors">
                                             {feature.title}
                                         </h3>
 
@@ -160,7 +160,7 @@ export function EnhancedFeaturesSection() {
                                             {feature.shortDesc}
                                         </p>
 
-                                        <button className="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 dark:text-indigo-400 group-hover:gap-2 transition-all">
+                                        <button className="inline-flex items-center gap-1 text-sm font-medium text-[#860000] dark:text-red-400 group-hover:gap-2 transition-all">
                                             Detayları Gör
                                             <ChevronRight className="h-4 w-4" />
                                         </button>

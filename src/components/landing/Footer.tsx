@@ -2,8 +2,13 @@
 
 import { Facebook, Instagram, Linkedin, Twitter, Mail, MapPin, Phone } from "lucide-react";
 import Link from "next/link";
+import type { LegalDocType } from '@/components/modals/LegalModals';
 
-export function Footer() {
+interface FooterProps {
+    onLegalClick?: (type: LegalDocType) => void;
+}
+
+export function Footer({ onLegalClick }: FooterProps) {
     return (
         <footer
             className="bg-slate-900 text-slate-300 relative z-50 overflow-hidden -mt-1"
@@ -53,10 +58,22 @@ export function Footer() {
                     <div className="space-y-4">
                         <h4 className="text-white font-semibold">Kurumsal</h4>
                         <ul className="space-y-2">
-                            <li><Link href="#" className="hover:text-white transition-colors">Hakkımızda</Link></li>
-                            <li><Link href="#" className="hover:text-white transition-colors">Gizlilik Politikası</Link></li>
-                            <li><Link href="#" className="hover:text-white transition-colors">KVKK Aydınlatma Metni</Link></li>
-                            <li><Link href="#" className="hover:text-white transition-colors">Kullanım Koşulları</Link></li>
+                            <li><Link href="#about" className="hover:text-white transition-colors">Hakkımızda</Link></li>
+                            <li>
+                                <button className="hover:text-white transition-colors text-left" onClick={() => onLegalClick?.('privacy')}>
+                                    Gizlilik Politikası
+                                </button>
+                            </li>
+                            <li>
+                                <button className="hover:text-white transition-colors text-left" onClick={() => onLegalClick?.('kvkk')}>
+                                    KVKK Aydınlatma Metni
+                                </button>
+                            </li>
+                            <li>
+                                <button className="hover:text-white transition-colors text-left" onClick={() => onLegalClick?.('terms')}>
+                                    Kullanım Koşulları
+                                </button>
+                            </li>
                         </ul>
                     </div>
 
@@ -66,15 +83,15 @@ export function Footer() {
                         <ul className="space-y-3">
                             <li className="flex items-start gap-3">
                                 <MapPin className="h-5 w-5 text-[#860000] shrink-0" />
-                                <span>İzmit, Kocaeli</span>
+                                <span className="text-slate-400">İzmit, Kocaeli</span>
                             </li>
                             <li className="flex items-center gap-3">
                                 <Phone className="h-5 w-5 text-[#860000] shrink-0" />
-                                <span>0535 404 07 12</span>
+                                <span className="text-slate-400">0535 404 07 12</span>
                             </li>
                             <li className="flex items-center gap-3">
                                 <Mail className="h-5 w-5 text-[#860000] shrink-0" />
-                                <span>bilgi@fokusistatistik.com</span>
+                                <span className="text-slate-400">bilgi@fokusistatistik.com</span>
                             </li>
                         </ul>
                         <div className="flex gap-4 pt-2">

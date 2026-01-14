@@ -10,24 +10,28 @@ import {
 export function FaqSection() {
     const faqs = [
         {
-            q: "Bilge nedir?",
-            a: "Bilge, akademik çalışmalar ve araştırmalar için geliştirilen, yapay zeka destekli profesyonel bir istatistik analiz platformudur. Karmaşık yazılımlara ihtiyaç duymadan, R tabanlı güvenilir motoru ile akademik standartlarda analiz raporları üretir."
+            q: "Bilge hangi istatistiksel analizleri destekliyor?",
+            a: "Temel olarak; Tanımlayıcı İstatistikler, Tek Grup ve Çok Grup Bağımsız Veri Analizleri (T-Tests, ANOVA, Mann-Whitney U, Kruskal-Wallis), Bağımlı Veri Analizleri (Paired T-test, Wilcoxon, Repeated ANOVA), Ki-Kare Testleri ve Korelasyon Analizlerini eksiksiz destekler. "
         },
         {
-            q: "Analiz sonuçları akademik yayınlarda kullanılabilir mi?",
-            a: "Evet. Tüm analizler APA (American Psychological Association) 7. sürüm formatına uygun olarak tablolaştırılır ve raporlanır. Dünyanın en saygın dergileri tarafından kabul gören R istatistik altyapısını kullanırız."
+            q: "Veri temizleme yapılıyor mu?",
+            a: "Evet. Veri setiniz yüklendiğinde otomatik 'Diagnose' modülü çalışır. Eksik veriler (missing values), uç değerler (outliers) ve hatalı veri tipleri tespit edilerek size raporlanır ve çözüm önerileri sunulur."
         },
         {
-            q: "Verilerim güvende mi?",
-            a: "Kesinlikle. Verileriniz SSL/TLS şifreleme ile transfer edilir, KVKK ve GDPR uyumlu sunucularda saklanır. Analiz işleminiz bittikten sonra verilerinizi kalıcı olarak silebilirsiniz. Fokus İstatistik güvencesi altındasınız."
+            q: "Sonuçlar için yorum yapılıyor mu?",
+            a: "Kesinlikle. Oluşturulan her tablo ve grafik için APA standartlarına uygun, bilimsel bir açıklama metni yazılır. p değerinin anlamı, etki büyüklüğü ve hipotezin durumu detaylıca açıklanır."
         },
         {
-            q: "Hangi analizleri yapabilirim?",
-            a: "T-Testleri, ANOVA (Tek/Çift Yönlü, Tekrarlı), Regresyon Analizleri, Ki-Kare, Korelasyon (Pearson/Spearman), Mann-Whitney U, Kruskal-Wallis ve daha birçok parametrik/non-parametrik testi destekleriz."
+            q: "Kredi sistemi nasıl çalışır?",
+            a: "Bilge, bütçe dostu 'Kullandıkça Öde' modelini kullanır. Sabit yüksek aylık ücretler yerine, sadece yaptığınız analiz ve sorgu kadar kredi harcarsınız. Başlangıçta size hediye kredi tanımlanır."
         },
         {
-            q: "Raporları hangi dilde alabilirim?",
-            a: "Raporlarınızı tek tıkla hem Türkçe hem de İngilizce olarak oluşturabilirsiniz. Özellikle uluslararası yayın hazırlayan araştırmacılar için İngilizce raporlama modülümüz mevcuttur."
+            q: "Ödeme nasıl yapılır?",
+            a: "Güvenli ödeme altyapısı iyzico ile tüm kredi kartlarıyla ödeme yapabilir veya Havale/EFT yöntemini tercih edebilirsiniz. Kurumsal fatura seçeneğimiz mevcuttur."
+        },
+        {
+            q: "Mobil cihazlarda kullanabilir miyim?",
+            a: "Evet, Bilge %100 mobil uyumludur. Telefon veya tabletinizden laboratuvara bağlanabilir, veri yükleyebilir, analiz süreçlerini yönetebilir ve raporlarınızı görüntüleyebilirsiniz."
         }
     ];
 
@@ -39,7 +43,7 @@ export function FaqSection() {
                         Sıkça Sorulan Sorular
                     </h2>
                     <p className="text-slate-600 dark:text-slate-400">
-                        Aklınıza takılan soruların cevapları burada.
+                        Merak edilenler ve platform hakkında detaylar.
                     </p>
                 </div>
 
