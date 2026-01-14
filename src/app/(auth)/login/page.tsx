@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { Loader2, AlertCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
 
 export default function LoginPage() {
     const [isGoogleLoading, setIsGoogleLoading] = useState(false);
@@ -13,21 +14,17 @@ export default function LoginPage() {
 
     useEffect(() => {
         // 🧹 CACHE & SERVICE WORKER CLEANER
-        // Sunucu güncellendiğinde tarayıcının hala eski versiyonu göstermesini engeller.
         if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
             navigator.serviceWorker.getRegistrations().then(function (registrations) {
                 for (let registration of registrations) {
                     registration.unregister();
-                    console.log('🗑️ [Auto-Fix] Eski PWA Service Worker silindi:', registration);
                 }
             });
-            // Zorla cache temizliği
             if ('caches' in window) {
                 caches.keys().then((names) => {
                     names.forEach((name) => {
                         caches.delete(name);
                     });
-                    console.log('🧹 [Auto-Fix] Tüm cache temizlendi.');
                 });
             }
         }
@@ -147,6 +144,14 @@ export default function LoginPage() {
                     transition={{ delay: 0.4 }}
                     className="text-center space-y-3"
                 >
+                    <div className="flex justify-center mb-2">
+                        <Link href="/">
+                            <Button variant="ghost" size="sm" className="text-slate-500 hover:text-slate-900 dark:hover:text-slate-300 gap-2">
+                                ← Anasayfaya Dön
+                            </Button>
+                        </Link>
+                    </div>
+
                     <p className="text-xs text-slate-500 dark:text-slate-400">
                         Devam ederek{' '}
                         <a href="#" className="text-[#860000] hover:text-[#a00000] underline underline-offset-2 transition-colors">Kullanım Koşulları</a>

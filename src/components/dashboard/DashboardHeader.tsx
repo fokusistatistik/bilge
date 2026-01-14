@@ -1,41 +1,39 @@
 'use client';
 
 import { Button } from "@/components/ui/button";
-import { Home, Menu, User, LogOut, Settings, Languages, Coins } from "lucide-react";
-import { useRouter, usePathname } from "next/navigation";
-import { CreditBadge } from '@/components/dashboard/CreditBadge';
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useStore } from "@/store/useStore";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { useSession, signOut } from "next-auth/react";
-import { translations } from "@/lib/translations";
+import { Home, Menu, User, LogOut, Settings, Languages, Coins, BrainCircuit } from "lucide-react";
+// ... (imports)
 
-interface DashboardNavbarProps {
-    currentProjectTitle?: string;
-}
-
-export function DashboardNavbar({ currentProjectTitle }: DashboardNavbarProps) {
+export function DashboardNavbar() {
     const router = useRouter();
     const pathname = usePathname();
-    const { language, setLanguage, currentProject } = useStore();
+    const { language, setLanguage, currentProject, aiMode } = useStore();
     const t = translations[language].dashboard;
 
+    const getAiModeColor = () => {
+        switch (aiMode) {
+            case 'analysis': return 'bg-blue-100 text-blue-700 border-blue-200';
+            case 'consultancy': return 'bg-purple-100 text-purple-700 border-purple-200';
+            default: return 'bg-green-100 text-green-700 border-green-200';
+        }
+    };
+
+    const getAiModeLabel = () => {
+        switch (aiMode) {
+            case 'analysis': return language === 'tr' ? 'Analiz Modu' : 'Analysis Mode';
+            case 'consultancy': return language === 'tr' ? 'Danışmanlık Modu' : 'Consultancy Mode';
+            default: return language === 'tr' ? 'Sohbet Modu' : 'Chat Mode';
+        }
+    };
+
     const getPageTitle = () => {
-        if (pathname === '/dashboard') return currentProjectTitle || 'Araştırma Laboratuvarı';
-        if (pathname === '/settings') return 'Hesap Ayarları';
-        if (pathname.includes('/project')) return 'Proje Detayları';
-        return 'Panel';
+        if (pathname === '/dashboard' && currentProject) return currentProject.title;
+        if (pathname === '/settings') return language === 'tr' ? 'Hesap Ayarları' : 'Account Settings';
+        return 'Bilge Panel';
     };
 
     return (
-        <header className="h-16 border-b flex items-center justify-between px-4 sm:px-6 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md z-30 sticky top-0 transition-all shadow-sm supports-[backdrop-filter]:bg-white/60">
+        <header className="h-16 border-b flex items-center justify-between px-4 sm:px-6 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md z-30 sticky top-0 transition-all shadow-sm">
             <div className="flex items-center gap-4">
                 <Button variant="ghost" size="icon" className="md:hidden text-slate-500">
                     <Menu className="h-5 w-5" />
@@ -49,17 +47,20 @@ export function DashboardNavbar({ currentProjectTitle }: DashboardNavbarProps) {
                 {/* Desktop Title / Breadcrumb */}
                 <div className="hidden md:flex flex-col">
                     <div className="flex items-center gap-2">
-                        <span className="text-sm font-semibold text-slate-800 dark:text-slate-100 tracking-tight">{getPageTitle()}</span>
-                        {currentProjectTitle && pathname === '/dashboard' && (
-                            <span className="bg-indigo-50 text-indigo-600 border border-indigo-100 text-[10px] px-2 py-0.5 rounded-full font-medium">
-                                {t.active}
-                            </span>
-                        )}
-                        {currentProject && (
-                            <span className="flex items-center gap-1 bg-amber-50 text-amber-600 border border-amber-100 text-[10px] px-2 py-0.5 rounded-full font-medium ml-1" title="Bu proje için harcanan toplam kredi">
-                                <Coins className="h-3 w-3" />
-                                {currentProject.usedCredits || 0}
-                            </span>
+                        <span className="text-base font-bold text-slate-800 dark:text-slate-100 tracking-tight flex items-center gap-2">
+                            {getPageTitle()}
+                        </span>
+
+                        {pathname === '/dashboard' && currentProject && (
+                            <>
+                                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${currentProject.targetLanguage === 'en' ? 'bg-blue-50 text-blue-600' : 'bg-red-50 text-red-600'}`}>
+                                    {currentProject.targetLanguage === 'en' ? 'EN' : 'TR'}
+                                </span>
+                                <div className={`px-2 py-0.5 rounded-full text-[10px] font-bold border flex items-center gap-1 ${getAiModeColor()}`}>
+                                    <BrainCircuit className="h-3 w-3" />
+                                    {getAiModeLabel()}
+                                </div>
+                            </>
                         )}
                     </div>
                 </div>
@@ -99,6 +100,13 @@ export function DashboardNavbar({ currentProjectTitle }: DashboardNavbarProps) {
                 <div className="h-4 w-px bg-slate-200 dark:bg-slate-700 hidden md:block"></div>
 
                 <CreditBadge />
+
+                {/* Theme Toggle */}
+                <Button variant="ghost" size="icon" className="hidden md:flex text-slate-500" onClick={() => document.documentElement.classList.toggle('dark')}>
+                    <Settings className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 absolute" />
+                    <Settings className="h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100 absolute" />
+                    <span className="sr-only">Toggle theme</span>
+                </Button>
 
                 {/* User Dropdown for Navbar */}
                 <div className="ml-2">

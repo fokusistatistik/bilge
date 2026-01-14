@@ -43,23 +43,13 @@ export interface Project {
     decimalSeparator?: '.' | ',';
     decimalPrecision?: number;
     targetTest?: string;
+    reportFormat?: 'APA7' | 'Chicago' | 'Harvard' | 'MLA' | 'IEEE';
     members?: ProjectMember[];
     variables?: ProjectVariable[];
 
     // Metrics
     usedCredits: number;
-
-    // Content
-    files: { name: string; url: string; type: string; date: Date }[];
-    outputs: { name: string; url: string; type: 'chart' | 'report' | 'image' | 'other'; date: Date }[];
-    reports: { name: string; url: string; date: Date }[];
-    messages: Message[];
-
-    // Meta
-    createdAt: Date;
-    color?: string;
-    importance?: 'low' | 'medium' | 'high';
-    isFavorite?: boolean;
+    // ...
 }
 
 export interface UserProfile {
@@ -72,22 +62,48 @@ export interface UserProfile {
     // Personal Info
     phone?: string;
     country?: string;
-    birthDate?: Date;
+    birthDate?: string; // ISO String for easier storage
+    bio?: string;
 
     // Academic Info
     academicTitle?: string;
     institution?: string;
+    department?: string;
     academicField?: string;
-    researchInterests?: string[]; // New: İlgi alanları
+    researchInterests?: string[];
+
+    // CV & Resume
+    education?: { school: string; department: string; year: string; degree: string }[];
+    publications?: { title: string; journal: string; year: string; doi?: string }[];
+    skills?: string[];
+
+    // Configuration
+    notifications?: {
+        email: boolean;
+        sms: boolean;
+        app: boolean;
+        marketing: boolean;
+        analysisComplete: boolean;
+    };
 
     // Credit & Referral
     credits: number;
     autoReload?: boolean;
     minCreditLimit?: number;
     billingAddress?: string;
-    referralCode?: string; // My unique code
+    referralCode?: string;
     istacoin?: number;
-    earnedCredits?: number; // Total gained from refs
+    earnedCredits?: number;
+
+    // Billing History
+    paymentHistory?: {
+        id: string;
+        date: string;
+        amount: number;
+        description: string;
+        status: 'success' | 'failed' | 'pending';
+        invoiceUrl?: string;
+    }[];
 
     // App Settings
     isProfileComplete: boolean;

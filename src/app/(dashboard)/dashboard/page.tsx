@@ -9,7 +9,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { NewProjectModal } from '@/components/dashboard/NewProjectModal';
 import { HelpModal } from '@/components/dashboard/HelpModal';
-import { TestSuggestionModal } from '@/components/dashboard/TestSuggestionModal'; // Imported
+import { TestSuggestionModal } from '@/components/dashboard/TestSuggestionModal';
+import { ProjectActions } from '@/components/dashboard/ProjectActions';
 import { translations } from "@/lib/translations";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -30,21 +31,10 @@ import {
 } from "@/components/ui/select";
 import {
     Send,
-    Bot,
-    Sparkles,
     Plus,
     UploadCloud,
-    Settings,
-    Users,
-    HelpCircle,
-    Coins,
-    Sun,
-    Moon,
-    PanelRightClose,
-    PanelRightOpen,
-    BrainCircuit,
-    Lightbulb,
-    FolderOpen
+    FolderOpen,
+    Users
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -57,10 +47,8 @@ export default function DashboardPage() {
         addFileToProject,
         updateProject,
         language,
-        creditBalance,
         isRightSidebarOpen,
-        toggleRightSidebar,
-        aiMode
+        toggleRightSidebar
     } = useStore();
     const { data: session } = useSession();
     const [input, setInput] = useState("");
@@ -70,13 +58,11 @@ export default function DashboardPage() {
     const [isDragging, setIsDragging] = useState(false);
     const [showSettings, setShowSettings] = useState(false);
     const [showHelp, setShowHelp] = useState(false);
-    const [showTestSuggestion, setShowTestSuggestion] = useState(false); // New State
-    const [isDarkMode, setIsDarkMode] = useState(false);
+    const [showTestSuggestion, setShowTestSuggestion] = useState(false);
 
     const t = translations[language].dashboard;
     const chatbotT = translations[language].chatbot;
 
-    // Initial messages
     const initialMessage = {
         id: 'init',
         role: 'system' as const,
@@ -85,18 +71,11 @@ export default function DashboardPage() {
     };
     const displayMessages = chatHistory.length > 0 ? chatHistory : [initialMessage];
 
-    // Scroll to bottom
     useEffect(() => {
         if (scrollRef.current) {
             scrollRef.current.scrollIntoView({ behavior: 'smooth' });
         }
     }, [displayMessages, isTyping]);
-
-    // Theme Toggle
-    const toggleTheme = () => {
-        const isDark = document.documentElement.classList.toggle('dark');
-        setIsDarkMode(isDark);
-    };
 
     const handleSend = (text: string = input) => {
         if (!text.trim() || !currentProject) return;
@@ -116,7 +95,7 @@ export default function DashboardPage() {
             const aiMsg = {
                 id: (Date.now() + 1).toString(),
                 role: 'system' as const,
-                content: language === 'tr' ? 'Talebiniz işleniyor... (Simülasyon)' : 'Processing request... (Simulation)',
+                content: language === 'tr' ? 'Talebiniz işlendi. (Simülasyon)' : 'Request processed. (Simulation)',
                 timestamp: new Date()
             };
             addMessage(aiMsg);
@@ -154,23 +133,6 @@ export default function DashboardPage() {
         }
     };
 
-    // AI Mode Color Mapping
-    const getAiModeColor = () => {
-        switch (aiMode) {
-            case 'analysis': return 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 border-blue-200 dark:border-blue-800';
-            case 'consultancy': return 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400 border-purple-200 dark:border-purple-800';
-            default: return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 border-green-200 dark:border-green-800';
-        }
-    };
-
-    const getAiModeLabel = () => {
-        switch (aiMode) {
-            case 'analysis': return language === 'tr' ? 'Analiz Modu' : 'Analysis Mode';
-            case 'consultancy': return language === 'tr' ? 'Danışmanlık Modu' : 'Consultancy Mode';
-            default: return language === 'tr' ? 'Sohbet Modu' : 'Chat Mode';
-        }
-    };
-
     if (!currentProject) {
         return (
             <div className="flex flex-col h-[calc(100vh-4rem)] bg-slate-50 dark:bg-slate-950 items-center justify-center p-6 text-center">
@@ -190,9 +152,6 @@ export default function DashboardPage() {
         );
     }
 
-    // Dynamic Theme Color (Default Red)
-    const activeColor = currentProject.color || '#860000';
-
     return (
         <div
             className="flex h-[calc(100vh-4rem)] bg-white dark:bg-slate-950 overflow-hidden relative"
@@ -200,7 +159,6 @@ export default function DashboardPage() {
             onDragLeave={(e) => { e.preventDefault(); setIsDragging(false); }}
             onDrop={(e) => { e.preventDefault(); setIsDragging(false); handleFileProcess(e.dataTransfer.files); }}
         >
-            {/* Drag Overlay */}
             <AnimatePresence>
                 {isDragging && (
                     <motion.div
@@ -218,99 +176,10 @@ export default function DashboardPage() {
                 )}
             </AnimatePresence>
 
-            {/* Main Chat Area */}
             <div className="flex-1 flex flex-col min-w-0 border-r border-slate-200 dark:border-slate-800">
-                {/* Enhanced Dashboard Header */}
-                <div className="h-16 border-b flex justify-between items-center px-4 md:px-6 bg-white/80 dark:bg-slate-950/80 backdrop-blur z-10 shrink-0">
 
-                    {/* Left: Project Info */}
-                    <div className="flex items-center gap-4 overflow-hidden">
-                        <div>
-                            <h1 className="font-bold text-slate-900 dark:text-white flex items-center gap-2 text-lg">
-                                {currentProject.title}
-                                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${currentProject.targetLanguage === 'en' ? 'bg-blue-50 text-blue-600' : 'bg-red-50 text-red-600'}`}>
-                                    {currentProject.targetLanguage === 'en' ? 'EN' : 'TR'}
-                                </span>
-                            </h1>
-                            <p className="text-xs text-slate-500 truncate max-w-md flex items-center gap-1">
-                                <Sparkles className="h-3 w-3" />
-                                {currentProject.description || "Analiz asistanı hazır."}
-                            </p>
-                        </div>
-                    </div>
-
-                    {/* Middle: AI Mode Badge */}
-                    <div className="hidden md:flex items-center">
-                        <div className={`px-3 py-1 rounded-full text-xs font-bold border flex items-center gap-2 ${getAiModeColor()}`}>
-                            <BrainCircuit className="h-3 w-3" />
-                            {getAiModeLabel()}
-                        </div>
-                    </div>
-
-                    {/* Right: Controls */}
-                    <div className="flex items-center gap-2">
-                        {/* Credits */}
-                        <div className="hidden lg:flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-600 text-white px-3 py-1 rounded-full text-xs font-bold shadow-sm mr-2">
-                            <Coins className="h-3 w-3" />
-                            {creditBalance}
-                        </div>
-
-                        {/* Test Selection & Support */}
-                        <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-900 rounded-lg p-1 border">
-                            <Select
-                                value={currentProject.targetTest || ''}
-                                onValueChange={(val) => updateProjectSettings('targetTest', val)}
-                            >
-                                <SelectTrigger className="w-[140px] h-7 text-xs border-0 bg-transparent focus:ring-0">
-                                    <SelectValue placeholder="Test Seçin" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="ttest">T-Testi</SelectItem>
-                                    <SelectItem value="anova">ANOVA</SelectItem>
-                                    <SelectItem value="correlation">Korelasyon</SelectItem>
-                                    <SelectItem value="regression">Regresyon</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            <Button
-                                size="sm"
-                                variant="ghost"
-                                className="h-7 w-7 p-0 text-amber-600 hover:text-amber-700 hover:bg-amber-50 dark:hover:bg-amber-900/20"
-                                title="Hangi test uygun? Destek al."
-                                onClick={() => setShowTestSuggestion(true)}
-                            >
-                                <Lightbulb className="h-4 w-4" />
-                            </Button>
-                        </div>
-
-                        <div className="w-px h-6 bg-slate-200 dark:bg-slate-800 mx-1" />
-
-                        {/* Settings */}
-                        <Button variant="ghost" size="icon" onClick={() => setShowSettings(true)} title="Proje Ayarları">
-                            <Settings className="h-5 w-5 text-slate-500" />
-                        </Button>
-
-                        {/* Help */}
-                        <Button variant="ghost" size="icon" onClick={() => setShowHelp(true)}>
-                            <HelpCircle className="h-5 w-5 text-slate-500" />
-                        </Button>
-
-                        {/* Theme Toggle */}
-                        <Button variant="ghost" size="icon" onClick={toggleTheme} title="Karanlık Mod">
-                            {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-                        </Button>
-
-                        {/* Right Sidebar Toggle */}
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={toggleRightSidebar}
-                            className={!isRightSidebarOpen ? 'text-slate-400' : 'text-[#860000]'}
-                            title={isRightSidebarOpen ? "Paneli Gizle" : "Paneli Göster"}
-                        >
-                            {isRightSidebarOpen ? <PanelRightClose className="h-5 w-5" /> : <PanelRightOpen className="h-5 w-5" />}
-                        </Button>
-                    </div>
-                </div>
+                {/* Academic Action Toolbar */}
+                <ProjectActions />
 
                 {/* Messages Area */}
                 <ScrollArea className="flex-1 p-4 md:p-6 bg-slate-50/50 dark:bg-slate-900/50">
@@ -395,7 +264,7 @@ export default function DashboardPage() {
                 </div>
             </div>
 
-            {/* Project Settings Dialog (Tabbed) */}
+            {/* Project Settings Dialog */}
             <Dialog open={showSettings} onOpenChange={setShowSettings}>
                 <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
                     <DialogHeader>
@@ -420,29 +289,6 @@ export default function DashboardPage() {
                                 <Label>Açıklama</Label>
                                 <Textarea value={currentProject.description || ''} onChange={(e) => updateProjectSettings('description', e.target.value)} />
                             </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label>Proje Tipi</Label>
-                                    <Select value={currentProject.type} onValueChange={(v) => updateProjectSettings('type', v)}>
-                                        <SelectTrigger><SelectValue /></SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="quantitative">Nicel</SelectItem>
-                                            <SelectItem value="qualitative">Nitel</SelectItem>
-                                            <SelectItem value="mixed">Karma</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <div className="space-y-2">
-                                    <Label>Dil</Label>
-                                    <Select value={currentProject.targetLanguage || 'tr'} onValueChange={(v) => updateProjectSettings('targetLanguage', v)}>
-                                        <SelectTrigger><SelectValue /></SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="tr">Türkçe</SelectItem>
-                                            <SelectItem value="en">English</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                            </div>
                         </TabsContent>
 
                         {/* Analysis Settings */}
@@ -459,13 +305,21 @@ export default function DashboardPage() {
                                     </Select>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label>Basamak (0-5)</Label>
-                                    <Input type="number" min="0" max="5" value={currentProject.decimalPrecision || 3} onChange={(e) => updateProjectSettings('decimalPrecision', parseInt(e.target.value))} />
+                                    <Label>Hedef Test</Label>
+                                    <Select value={currentProject.targetTest || ''} onValueChange={(v) => updateProjectSettings('targetTest', v)}>
+                                        <SelectTrigger><SelectValue placeholder="Seçiniz" /></SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="ttest">T-Testi</SelectItem>
+                                            <SelectItem value="anova">ANOVA</SelectItem>
+                                            <SelectItem value="correlation">Korelasyon</SelectItem>
+                                            <SelectItem value="regression">Regresyon</SelectItem>
+                                        </SelectContent>
+                                    </Select>
                                 </div>
                             </div>
                         </TabsContent>
 
-                        {/* Members - Simplified for brevity */}
+                        {/* Members */}
                         <TabsContent value="members" className="space-y-4">
                             <div className="text-center py-4 border-2 border-dashed rounded-lg text-slate-400">
                                 <Users className="h-8 w-8 mx-auto mb-2 opacity-50" />
