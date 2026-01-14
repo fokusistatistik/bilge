@@ -9,6 +9,10 @@ const withPWA = withPWAInit({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+    // Standalone mode for better stability with PM2
+    output: "standalone",
+
+    // HATA YOKSAYMA
     eslint: {
         ignoreDuringBuilds: true
     },
