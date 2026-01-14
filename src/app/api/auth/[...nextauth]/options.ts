@@ -113,12 +113,12 @@ export const authOptions: NextAuthOptions = {
     events: {
         // EN KRİTİK KISIM: Kullanıcı giriş yaptığında BURASI çalışır
         async signIn({ user, account, profile, isNewUser }) {
-            console.log('🔔 SignIn Event Tetiklendi:', user.email);
+            console.log(`🔔 SignIn Event Tetiklendi (${isNewUser ? 'Yeni Kullanıcı' : 'Mevcut Kullanıcı'}):`, user.email);
 
             try {
                 const hookData = {
-                    event: 'google_oauth_login',
-                    isNewUser: isNewUser, // NextAuth bunu otomatik algılar
+                    event: isNewUser ? 'google_oauth_signup' : 'google_oauth_signin',
+                    isNewUser: isNewUser,
                     user: {
                         id: user.id,
                         email: user.email,
@@ -136,22 +136,45 @@ export const authOptions: NextAuthOptions = {
                     },
                     metadata: {
                         env: process.env.NODE_ENV,
+                        timestamp: new Date().toISOString()
                     }
                 };
 
-                // Signup ve Signin için aynı payload'ı gönderelim, n8n ayırsın (veya isNewUser'a göre ayırabiliriz)
-                // Daha garanti olması için her girişte SIGNUP webhook'unu dürtüyorum (update için)
-                await sendToN8nWebhook('signup', hookData);
+                // Kullanıcı durumuna göre doğru webhook'a yönlendir
+                if (isNewUser) {
+                    await sendToN8nWebhook('signup', hookData);
+                } else {
+                    await sendToN8nWebhook('signin', hookData);
+                }
 
             } catch (err) {
                 console.error('🔥 SignIn Event Hatası:', err);
             }
         },
         async signOut({ token }) {
-            await sendToN8nWebhook('signout', {
-                event: 'user_signout',
-                user: { id: token.id, email: token.email }
-            });
+            console.log('🔔 SignOut Event Tetiklendi:', token.email);
+
+            try {
+                const hookData = {
+                    event: 'user_signout',
+                    isNewUser: false,
+                    user: {
+                        id: token.id || token.sub,
+                        email: token.email,
+                        name: token.name,
+                        image: token.picture
+                    },
+                    oauth: null, // Signout sırasında oauth verisi erişilebilir değil
+                    metadata: {
+                        env: process.env.NODE_ENV,
+                        timestamp: new Date().toISOString()
+                    }
+                };
+
+                await sendToN8nWebhook('signout', hookData);
+            } catch (err) {
+                console.error('🔥 SignOut Event Hatası:', err);
+            }
         }
     },
     debug: process.env.NODE_ENV !== 'production', // Prod'da logları kapatabiliriz ama debug için açık kalsın

@@ -5,7 +5,10 @@ import Link from "next/link";
 
 export function Footer() {
     return (
-        <footer className="bg-slate-900 text-slate-300">
+        <footer
+            className="bg-slate-900 text-slate-300 relative z-50 overflow-hidden -mt-1"
+            style={{ boxShadow: "0 -5px 0 0 rgb(15, 23, 42)" }} // slate-900
+        >
             <div className="container px-4 md:px-6 mx-auto py-16">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-12 text-sm">
 
@@ -25,8 +28,13 @@ export function Footer() {
                             Doğru veri, doğru analiz, bilimsel kanıt.
                             Akademik çalışmalarınız için yapay zeka destekli profesyonel çözüm ortağınız.
                         </p>
-                        <div className="pt-2 text-xs text-slate-500">
-                            <strong>Bilge</strong>, bir <a href="https://fokusistatistik.com" target="_blank" className="text-white hover:underline">Fokus İstatistik</a> markasıdır.
+                        <div className="pt-2 text-xs text-slate-500 flex flex-wrap items-center gap-1.5">
+                            <strong>Bilge</strong>, bir
+                            <a href="https://fokusistatistik.com" target="_blank" className="inline-flex items-center gap-1 text-white hover:text-white/80 transition-opacity font-medium">
+                                <img src="https://static.fokusistatistik.com/resimler/favicon.png" alt="Fokus" className="h-3.5 w-3.5 object-contain" />
+                                Fokus İstatistik
+                            </a>
+                            markasıdır.
                         </div>
                     </div>
 
@@ -80,9 +88,11 @@ export function Footer() {
 
                 <div className="mt-16 pt-8 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4">
                     <p className="text-slate-500">© 2026 Bilge Platformu. Tüm hakları saklıdır.</p>
-                    <p className="text-slate-600 text-xs">
-                        Developed with <span className="text-[#860000]">❤️</span> by Fokus İstatistik R&D Team.
-                    </p>
+                    <div className="flex items-center gap-1.5 text-slate-600 text-xs">
+                        <span>Developed by</span>
+                        <img src="https://static.fokusistatistik.com/resimler/favicon.png" alt="Fokus Logo" className="h-3.5 w-3.5 object-contain" />
+                        <span>Fokus İstatistik R&D Team.</span>
+                    </div>
                 </div>
             </div>
         </footer>

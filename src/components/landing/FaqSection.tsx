@@ -32,7 +32,7 @@ export function FaqSection() {
     ];
 
     return (
-        <section className="py-24 bg-white dark:bg-slate-950 border-t border-slate-100 dark:border-slate-800" id="faq">
+        <section className="py-24 bg-white dark:bg-slate-950 border-t border-slate-100 dark:border-slate-800 relative" id="faq">
             <div className="container px-4 md:px-6 mx-auto max-w-3xl">
                 <div className="text-center mb-12">
                     <h2 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white mb-4">

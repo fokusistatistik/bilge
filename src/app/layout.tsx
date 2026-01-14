@@ -61,12 +61,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="tr">
-      <head>
-        <link rel="icon" type="image/png" sizes="32x32" href="https://static.fokusistatistik.com/bilge/logos/bilgefavicon.png" />
-        <link rel="icon" type="image/png" sizes="16x16" href="https://static.fokusistatistik.com/bilge/logos/bilgefavicon.png" />
-        <link rel="apple-touch-icon" sizes="180x180" href="https://static.fokusistatistik.com/bilge/logos/bilgefavicon.png" />
-        <link rel="shortcut icon" href="https://static.fokusistatistik.com/bilge/logos/bilgefavicon.png" />
-      </head>
+
       <body
         className={`${inter.variable} ${merriweather.variable} font-sans antialiased bg-background text-foreground`}
       >
